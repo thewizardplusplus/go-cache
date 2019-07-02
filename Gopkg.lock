@@ -65,6 +65,14 @@
   version = "v1.4.0"
 
 [[projects]]
+  digest = "1:0c179287ccdf3bd41bcf03665d7a78f60740ecfbd7a880eec4bbf2e754d36079"
+  name = "github.com/thewizardplusplus/go-hashmap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c95de4e9a61a30f71facff42fb58d72f06024808"
+  version = "v1.3"
+
+[[projects]]
   branch = "master"
   digest = "1:5ed88c68e8ff11e085ec406c214dbbd94ca2dd52143e00c8e86c78d880576188"
   name = "github.com/vektra/mockery"
@@ -118,6 +126,7 @@
   input-imports = [
     "github.com/alecthomas/gometalinter",
     "github.com/cweill/gotests/gotests",
+    "github.com/thewizardplusplus/go-hashmap",
     "github.com/vektra/mockery/cmd/mockery",
   ]
   solver-name = "gps-cdcl"
