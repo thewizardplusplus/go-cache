@@ -21,3 +21,8 @@ type Cache struct {
 	storage Storage
 	clock   Clock
 }
+
+// NewCache ...
+func NewCache(storage Storage, clock Clock) Cache {
+	return Cache{storage, clock}
+}
