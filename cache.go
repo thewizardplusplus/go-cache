@@ -15,3 +15,9 @@ type Storage interface {
 
 // Clock ...
 type Clock func() time.Time
+
+// Cache ...
+type Cache struct {
+	storage Storage
+	clock   Clock
+}
