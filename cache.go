@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"time"
+
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -10,3 +12,6 @@ type Storage interface {
 	Set(key hashmap.Key, data interface{})
 	Delete(key hashmap.Key)
 }
+
+// Clock ...
+type Clock func() time.Time
