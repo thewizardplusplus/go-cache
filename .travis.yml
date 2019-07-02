@@ -1,0 +1,9 @@
+language: go
+go:
+  - 1.11.x
+
+script:
+  - go test -coverprofile=coverage.txt -covermode=atomic ./...
+
+after_success:
+  - bash <(curl --silent https://codecov.io/bash)
