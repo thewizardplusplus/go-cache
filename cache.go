@@ -33,3 +33,13 @@ type value struct {
 func NewCache(storage Storage, clock Clock) Cache {
 	return Cache{storage, clock}
 }
+
+// Set ...
+func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
+	var expirationTime time.Time
+	if ttl != 0 {
+		expirationTime = cache.clock().Add(ttl)
+	}
+
+	cache.storage.Set(key, value{data, expirationTime})
+}
