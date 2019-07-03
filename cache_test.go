@@ -35,7 +35,40 @@ func TestCache_Set(test *testing.T) {
 		fields fields
 		args   args
 	}{
-		// TODO: add test cases
+		{
+			name: "without a TTL",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Set", new(MockKey), value{"data", time.Time{}})
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key:  new(MockKey),
+				data: "data",
+				ttl:  0,
+			},
+		},
+		{
+			name: "with a TTL",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Set", new(MockKey), value{"data", clock().Add(time.Second)})
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key:  new(MockKey),
+				data: "data",
+				ttl:  time.Second,
+			},
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			cache := Cache{data.fields.storage, data.fields.clock}
@@ -48,4 +81,13 @@ func TestCache_Set(test *testing.T) {
 
 func getPointer(value interface{}) uintptr {
 	return reflect.ValueOf(value).Pointer()
+}
+
+func clock() time.Time {
+	return time.Date(
+		2006, time.January, 2, // year, month, day
+		15, 4, 5, // hour, minute, second
+		0,        // nanosecond
+		time.UTC, // location
+	)
 }
