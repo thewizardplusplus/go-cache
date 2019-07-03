@@ -24,6 +24,11 @@ type Cache struct {
 	clock   Clock
 }
 
+type value struct {
+	data           interface{}
+	expirationTime time.Time
+}
+
 // NewCache ...
 func NewCache(storage Storage, clock Clock) Cache {
 	return Cache{storage, clock}
