@@ -19,6 +19,35 @@ func TestNewCache(test *testing.T) {
 	assert.Equal(test, getPointer(time.Now), getPointer(cache.clock))
 }
 
+func TestCache_Get(test *testing.T) {
+	type fields struct {
+		storage Storage
+		clock   Clock
+	}
+	type args struct {
+		key hashmap.Key
+	}
+
+	for _, data := range []struct {
+		name     string
+		fields   fields
+		args     args
+		wantData interface{}
+		wantErr  assert.ErrorAssertionFunc
+	}{
+		// TODO: add test cases
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			cache := Cache{data.fields.storage, data.fields.clock}
+			gotData, gotErr := cache.Get(data.args.key)
+
+			mock.AssertExpectationsForObjects(test, data.fields.storage, data.args.key)
+			assert.Equal(test, data.wantData, gotData)
+			data.wantErr(test, gotErr)
+		})
+	}
+}
+
 func TestCache_Set(test *testing.T) {
 	type fields struct {
 		storage Storage
