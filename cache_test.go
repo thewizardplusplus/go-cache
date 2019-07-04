@@ -35,7 +35,95 @@ func TestCache_Get(test *testing.T) {
 		wantData interface{}
 		wantErr  assert.ErrorAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name: "success with a zero expiration time",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Get", new(MockKey)).Return(value{"data", time.Time{}}, true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: "data",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "success with an expiration time equal to current one",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Get", new(MockKey)).Return(value{"data", clock()}, true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: "data",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "success with an expiration time greater than current one",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Get", new(MockKey)).
+						Return(value{"data", clock().Add(time.Second)}, true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: "data",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "error with a missed key",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Get", new(MockKey)).Return(nil, false)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: nil,
+			wantErr:  assert.Error,
+		},
+		{
+			name: "error with an expired key",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Get", new(MockKey)).
+						Return(value{"data", clock().Add(-time.Second)}, true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: nil,
+			wantErr:  assert.Error,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			cache := Cache{data.fields.storage, data.fields.clock}
