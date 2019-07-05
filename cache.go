@@ -57,6 +57,20 @@ func (cache Cache) Get(key hashmap.Key) (data interface{}, err error) {
 	return value.data, nil
 }
 
+// GetWithGC ...
+func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
+	data, err = cache.Get(key)
+	if err != nil {
+		if err == ErrKeyExpired {
+			cache.storage.Delete(key)
+		}
+
+		return nil, err
+	}
+
+	return data, nil
+}
+
 // Set ...
 func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 	var expirationTime time.Time
