@@ -80,3 +80,8 @@ func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 
 	cache.storage.Set(key, value{data, expirationTime})
 }
+
+// Delete ...
+func (cache Cache) Delete(key hashmap.Key) {
+	cache.storage.Delete(key)
+}
