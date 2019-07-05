@@ -59,6 +59,13 @@ func main() {
 }
 ```
 
+## Benchmarks
+
+```
+BenchmarkCacheGetting/Get-8         	10000000	      1641 ns/op	     352 B/op	      36 allocs/op
+BenchmarkCacheGetting/GetWithGC-8   	 5000000	      3291 ns/op	     575 B/op	      57 allocs/op
+```
+
 ## License
 
 The MIT License (MIT)
