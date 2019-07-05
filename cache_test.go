@@ -10,6 +10,16 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+type MockKeyWithID struct {
+	MockKey
+
+	ID int
+}
+
+func NewMockKeyWithID(id int) *MockKeyWithID {
+	return &MockKeyWithID{ID: id}
+}
+
 func TestNewCache(test *testing.T) {
 	storage := new(MockStorage)
 	cache := NewCache(storage, time.Now)
@@ -40,14 +50,16 @@ func TestCache_Get(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Get", new(MockKey)).Return(value{"data", time.Time{}}, true)
+					storage.
+						On("Get", NewMockKeyWithID(23)).
+						Return(value{"data", time.Time{}}, true)
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: "data",
 			wantErr:  assert.NoError,
@@ -57,14 +69,16 @@ func TestCache_Get(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Get", new(MockKey)).Return(value{"data", clock()}, true)
+					storage.
+						On("Get", NewMockKeyWithID(23)).
+						Return(value{"data", clock()}, true)
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: "data",
 			wantErr:  assert.NoError,
@@ -75,7 +89,7 @@ func TestCache_Get(test *testing.T) {
 				storage: func() Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Get", new(MockKey)).
+						On("Get", NewMockKeyWithID(23)).
 						Return(value{"data", clock().Add(time.Second)}, true)
 
 					return storage
@@ -83,7 +97,7 @@ func TestCache_Get(test *testing.T) {
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: "data",
 			wantErr:  assert.NoError,
@@ -93,14 +107,14 @@ func TestCache_Get(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Get", new(MockKey)).Return(nil, false)
+					storage.On("Get", NewMockKeyWithID(23)).Return(nil, false)
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: nil,
 			wantErr:  assert.Error,
@@ -111,7 +125,7 @@ func TestCache_Get(test *testing.T) {
 				storage: func() Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Get", new(MockKey)).
+						On("Get", NewMockKeyWithID(23)).
 						Return(value{"data", clock().Add(-time.Second)}, true)
 
 					return storage
@@ -119,7 +133,7 @@ func TestCache_Get(test *testing.T) {
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: nil,
 			wantErr:  assert.Error,
@@ -158,7 +172,7 @@ func TestCache_GetWithGC(test *testing.T) {
 				storage: func() Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Get", new(MockKey)).
+						On("Get", NewMockKeyWithID(23)).
 						Return(value{"data", clock().Add(time.Second)}, true)
 
 					return storage
@@ -166,7 +180,7 @@ func TestCache_GetWithGC(test *testing.T) {
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: "data",
 			wantErr:  assert.NoError,
@@ -176,14 +190,14 @@ func TestCache_GetWithGC(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Get", new(MockKey)).Return(nil, false)
+					storage.On("Get", NewMockKeyWithID(23)).Return(nil, false)
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: nil,
 			wantErr:  assert.Error,
@@ -194,16 +208,16 @@ func TestCache_GetWithGC(test *testing.T) {
 				storage: func() Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Get", new(MockKey)).
+						On("Get", NewMockKeyWithID(23)).
 						Return(value{"data", clock().Add(-time.Second)}, true)
-					storage.On("Delete", new(MockKey))
+					storage.On("Delete", NewMockKeyWithID(23))
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key: new(MockKey),
+				key: NewMockKeyWithID(23),
 			},
 			wantData: nil,
 			wantErr:  assert.Error,
@@ -241,14 +255,14 @@ func TestCache_Set(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Set", new(MockKey), value{"data", time.Time{}})
+					storage.On("Set", NewMockKeyWithID(23), value{"data", time.Time{}})
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key:  new(MockKey),
+				key:  NewMockKeyWithID(23),
 				data: "data",
 				ttl:  0,
 			},
@@ -258,14 +272,15 @@ func TestCache_Set(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Set", new(MockKey), value{"data", clock().Add(time.Second)})
+					storage.
+						On("Set", NewMockKeyWithID(23), value{"data", clock().Add(time.Second)})
 
 					return storage
 				}(),
 				clock: clock,
 			},
 			args: args{
-				key:  new(MockKey),
+				key:  NewMockKeyWithID(23),
 				data: "data",
 				ttl:  time.Second,
 			},
@@ -282,9 +297,9 @@ func TestCache_Set(test *testing.T) {
 
 func TestCache_Delete(test *testing.T) {
 	storage := new(MockStorage)
-	storage.On("Delete", new(MockKey))
+	storage.On("Delete", NewMockKeyWithID(23))
 
-	key := new(MockKey)
+	key := NewMockKeyWithID(23)
 
 	cache := Cache{storage, clock}
 	cache.Delete(key)
