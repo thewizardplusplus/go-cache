@@ -152,7 +152,62 @@ func TestCache_GetWithGC(test *testing.T) {
 		wantData interface{}
 		wantErr  assert.ErrorAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name: "success",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Get", new(MockKey)).
+						Return(value{"data", clock().Add(time.Second)}, true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: "data",
+			wantErr:  assert.NoError,
+		},
+		{
+			name: "error with a missed key",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Get", new(MockKey)).Return(nil, false)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: nil,
+			wantErr:  assert.Error,
+		},
+		{
+			name: "error with an expired key",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Get", new(MockKey)).
+						Return(value{"data", clock().Add(-time.Second)}, true)
+					storage.On("Delete", new(MockKey))
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key: new(MockKey),
+			},
+			wantData: nil,
+			wantErr:  assert.Error,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			cache := Cache{data.fields.storage, data.fields.clock}
