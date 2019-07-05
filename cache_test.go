@@ -280,6 +280,18 @@ func TestCache_Set(test *testing.T) {
 	}
 }
 
+func TestCache_Delete(test *testing.T) {
+	storage := new(MockStorage)
+	storage.On("Delete", new(MockKey))
+
+	key := new(MockKey)
+
+	cache := Cache{storage, clock}
+	cache.Delete(key)
+
+	mock.AssertExpectationsForObjects(test, storage, key)
+}
+
 func getPointer(value interface{}) uintptr {
 	return reflect.ValueOf(value).Pointer()
 }
