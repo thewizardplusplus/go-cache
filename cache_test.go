@@ -35,7 +35,50 @@ func TestValue_IsExpired(test *testing.T) {
 		args   args
 		want   assert.BoolAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name: "zero expiration time",
+			fields: fields{
+				Data:           "data",
+				ExpirationTime: time.Time{},
+			},
+			args: args{
+				clock: clock,
+			},
+			want: assert.False,
+		},
+		{
+			name: "expiration time less than the current one",
+			fields: fields{
+				Data:           "data",
+				ExpirationTime: clock().Add(-time.Second),
+			},
+			args: args{
+				clock: clock,
+			},
+			want: assert.True,
+		},
+		{
+			name: "expiration time equal to the current one",
+			fields: fields{
+				Data:           "data",
+				ExpirationTime: clock(),
+			},
+			args: args{
+				clock: clock,
+			},
+			want: assert.False,
+		},
+		{
+			name: "expiration time greater than the current one",
+			fields: fields{
+				Data:           "data",
+				ExpirationTime: clock().Add(time.Second),
+			},
+			args: args{
+				clock: clock,
+			},
+			want: assert.False,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			value := Value{data.fields.Data, data.fields.ExpirationTime}
