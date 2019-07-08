@@ -11,6 +11,16 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+type MockKeyWithID struct {
+	MockKey
+
+	ID int
+}
+
+func NewMockKeyWithID(id int) *MockKeyWithID {
+	return &MockKeyWithID{ID: id}
+}
+
 func TestNewTotalGC(test *testing.T) {
 	storage := new(MockStorage)
 	gc := NewTotalGC(time.Second, storage, time.Now)
@@ -60,12 +70,12 @@ func TestTotalGC_Clean(test *testing.T) {
 							return handler != nil
 						})).
 						Return(func(handler hashmap.Handler) bool {
-							return handler(new(MockKey), cache.Value{
+							return handler(NewMockKeyWithID(23), cache.Value{
 								Data:           "data",
 								ExpirationTime: clock().Add(-time.Second),
 							})
 						})
-					storage.On("Delete", new(MockKey))
+					storage.On("Delete", NewMockKeyWithID(23))
 
 					return storage
 				}(),
@@ -83,7 +93,7 @@ func TestTotalGC_Clean(test *testing.T) {
 							return handler != nil
 						})).
 						Return(func(handler hashmap.Handler) bool {
-							return handler(new(MockKey), cache.Value{
+							return handler(NewMockKeyWithID(23), cache.Value{
 								Data:           "data",
 								ExpirationTime: clock().Add(time.Second),
 							})
