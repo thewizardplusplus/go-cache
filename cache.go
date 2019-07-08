@@ -7,10 +7,18 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+// Clock ...
+type Clock func() time.Time
+
 // Value ...
 type Value struct {
 	Data           interface{}
 	ExpirationTime time.Time
+}
+
+// IsExpired ...
+func (value Value) IsExpired(clock Clock) bool {
+	return !value.ExpirationTime.IsZero() && clock().After(value.ExpirationTime)
 }
 
 //go:generate mockery -name=Storage -inpkg -case=underscore -testonly
@@ -21,9 +29,6 @@ type Storage interface {
 	Set(key hashmap.Key, data interface{})
 	Delete(key hashmap.Key)
 }
-
-// Clock ...
-type Clock func() time.Time
 
 // Cache ...
 type Cache struct {
@@ -50,8 +55,7 @@ func (cache Cache) Get(key hashmap.Key) (data interface{}, err error) {
 	}
 
 	value := data.(Value)
-	expirationTime := value.ExpirationTime
-	if !expirationTime.IsZero() && cache.clock().After(expirationTime) {
+	if value.IsExpired(cache.clock) {
 		return nil, ErrKeyExpired
 	}
 
