@@ -115,45 +115,7 @@ func TestCache_Get(test *testing.T) {
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			name: "success with a zero expiration time",
-			fields: fields{
-				storage: func() Storage {
-					storage := new(MockStorage)
-					storage.
-						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", time.Time{}}, true)
-
-					return storage
-				}(),
-				clock: clock,
-			},
-			args: args{
-				key: NewMockKeyWithID(23),
-			},
-			wantData: "data",
-			wantErr:  assert.NoError,
-		},
-		{
-			name: "success with an expiration time equal to current one",
-			fields: fields{
-				storage: func() Storage {
-					storage := new(MockStorage)
-					storage.
-						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", clock()}, true)
-
-					return storage
-				}(),
-				clock: clock,
-			},
-			args: args{
-				key: NewMockKeyWithID(23),
-			},
-			wantData: "data",
-			wantErr:  assert.NoError,
-		},
-		{
-			name: "success with an expiration time greater than current one",
+			name: "success",
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
