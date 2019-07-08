@@ -7,6 +7,8 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+//go:generate mockery -name=Storage -inpkg -case=underscore -testonly
+
 // Storage ...
 type Storage interface {
 	Iterate(handler hashmap.Handler) bool
