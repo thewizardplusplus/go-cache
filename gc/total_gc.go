@@ -1,6 +1,7 @@
 package gc
 
 import (
+	"context"
 	"time"
 
 	cache "github.com/thewizardplusplus/go-cache"
@@ -40,4 +41,19 @@ func (gc TotalGC) Clean() {
 
 		return true
 	})
+}
+
+// Run ...
+func (gc TotalGC) Run(ctx context.Context) {
+	ticker := time.NewTicker(gc.period)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			gc.Clean()
+		case <-ctx.Done():
+			return
+		}
+	}
 }
