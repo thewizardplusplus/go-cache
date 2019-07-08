@@ -1,7 +1,9 @@
 package gc
 
 import (
+	"context"
 	"reflect"
+	"sync"
 	"testing"
 	"time"
 
@@ -112,6 +114,32 @@ func TestTotalGC_Clean(test *testing.T) {
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
 		})
 	}
+}
+
+func TestTotalGC_Run(test *testing.T) {
+	storage := new(MockStorage)
+	storage.
+		On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+			return handler != nil
+		})).
+		Return(true)
+
+	var waiter sync.WaitGroup
+	waiter.Add(1)
+
+	const period = 100 * time.Millisecond
+	gc := TotalGC{period, storage, clock}
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		defer waiter.Done()
+		gc.Run(ctx)
+	}()
+
+	time.Sleep(period * 2)
+	cancel()
+	waiter.Wait()
+
+	mock.AssertExpectationsForObjects(test, storage)
 }
 
 func getPointer(value interface{}) uintptr {
