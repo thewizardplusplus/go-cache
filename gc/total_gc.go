@@ -19,3 +19,12 @@ type TotalGC struct {
 	storage Storage
 	clock   cache.Clock
 }
+
+// NewTotalGC ...
+func NewTotalGC(
+	period time.Duration,
+	storage Storage,
+	clock cache.Clock,
+) TotalGC {
+	return TotalGC{period, storage, clock}
+}
