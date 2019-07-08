@@ -52,7 +52,7 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", time.Time{}}, true)
+						Return(Value{"data", time.Time{}}, true)
 
 					return storage
 				}(),
@@ -71,7 +71,7 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", clock()}, true)
+						Return(Value{"data", clock()}, true)
 
 					return storage
 				}(),
@@ -90,7 +90,7 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", clock().Add(time.Second)}, true)
+						Return(Value{"data", clock().Add(time.Second)}, true)
 
 					return storage
 				}(),
@@ -126,7 +126,7 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", clock().Add(-time.Second)}, true)
+						Return(Value{"data", clock().Add(-time.Second)}, true)
 
 					return storage
 				}(),
@@ -173,7 +173,7 @@ func TestCache_GetWithGC(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", clock().Add(time.Second)}, true)
+						Return(Value{"data", clock().Add(time.Second)}, true)
 
 					return storage
 				}(),
@@ -209,7 +209,7 @@ func TestCache_GetWithGC(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(value{"data", clock().Add(-time.Second)}, true)
+						Return(Value{"data", clock().Add(-time.Second)}, true)
 					storage.On("Delete", NewMockKeyWithID(23))
 
 					return storage
@@ -255,7 +255,7 @@ func TestCache_Set(test *testing.T) {
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
-					storage.On("Set", NewMockKeyWithID(23), value{"data", time.Time{}})
+					storage.On("Set", NewMockKeyWithID(23), Value{"data", time.Time{}})
 
 					return storage
 				}(),
@@ -273,7 +273,7 @@ func TestCache_Set(test *testing.T) {
 				storage: func() Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Set", NewMockKeyWithID(23), value{"data", clock().Add(time.Second)})
+						On("Set", NewMockKeyWithID(23), Value{"data", clock().Add(time.Second)})
 
 					return storage
 				}(),
