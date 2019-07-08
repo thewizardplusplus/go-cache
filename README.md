@@ -17,11 +17,14 @@ $ go get github.com/thewizardplusplus/go-cache
 package main
 
 import (
+	"context"
 	"fmt"
 	"hash/fnv"
 	"io"
 	"time"
 
+	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/gc"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -29,7 +32,7 @@ type StringKey string
 
 func (key StringKey) Hash() int {
 	hash := fnv.New32()
-	io.WriteString(hash, string(key))
+	io.WriteString(hash, string(key)) // nolint: errcheck
 
 	return int(hash.Sum32())
 }
@@ -40,7 +43,10 @@ func (key StringKey) Equals(other interface{}) bool {
 
 func main() {
 	storage := hashmap.NewConcurrentHashMap()
-	timeZones := NewCache(storage, time.Now)
+	gc := gc.NewTotalGC(time.Millisecond, storage, time.Now)
+	go gc.Run(context.Background())
+
+	timeZones := cache.NewCache(storage, time.Now)
 	timeZones.Set(StringKey("EST"), -5*60*60, 100*time.Millisecond)
 	timeZones.Set(StringKey("CST"), -6*60*60, 100*time.Millisecond)
 	timeZones.Set(StringKey("MST"), -7*60*60, 100*time.Millisecond)
@@ -55,7 +61,7 @@ func main() {
 
 	// Output:
 	// -18000 <nil>
-	// <nil> key expired
+	// <nil> key missed
 }
 ```
 
