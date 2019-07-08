@@ -1,11 +1,14 @@
-package cache
+package cache_test
 
 import (
+	"context"
 	"fmt"
 	"hash/fnv"
 	"io"
 	"time"
 
+	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/gc"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -24,7 +27,10 @@ func (key StringKey) Equals(other interface{}) bool {
 
 func Example() {
 	storage := hashmap.NewConcurrentHashMap()
-	timeZones := NewCache(storage, time.Now)
+	gc := gc.NewTotalGC(time.Millisecond, storage, time.Now)
+	go gc.Run(context.Background())
+
+	timeZones := cache.NewCache(storage, time.Now)
 	timeZones.Set(StringKey("EST"), -5*60*60, 100*time.Millisecond)
 	timeZones.Set(StringKey("CST"), -6*60*60, 100*time.Millisecond)
 	timeZones.Set(StringKey("MST"), -7*60*60, 100*time.Millisecond)
@@ -39,5 +45,5 @@ func Example() {
 
 	// Output:
 	// -18000 <nil>
-	// <nil> key expired
+	// <nil> key missed
 }
