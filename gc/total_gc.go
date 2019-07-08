@@ -30,3 +30,14 @@ func NewTotalGC(
 ) TotalGC {
 	return TotalGC{period, storage, clock}
 }
+
+// Clean ...
+func (gc TotalGC) Clean() {
+	gc.storage.Iterate(func(key hashmap.Key, value interface{}) bool {
+		if value.(cache.Value).IsExpired(gc.clock) {
+			gc.storage.Delete(key)
+		}
+
+		return true
+	})
+}
