@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	cache "github.com/thewizardplusplus/go-cache"
+	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 func TestNewPartialGC(test *testing.T) {
@@ -28,7 +29,71 @@ func TestPartialGC_Clean(test *testing.T) {
 		name   string
 		fields fields
 	}{
-		// TODO: add test cases
+		{
+			name: "without values",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(true)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+		},
+		{
+			name: "with value and its expiration time less than the current one",
+			fields: fields{
+				storage: func() Storage {
+					var expiredCount int
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(func(handler hashmap.Handler) bool {
+							expiredCount++
+							if expiredCount > 1 {
+								return true
+							}
+
+							return handler(NewMockKeyWithID(23), cache.Value{
+								Data:           "data",
+								ExpirationTime: clock().Add(-time.Second),
+							})
+						})
+					storage.On("Delete", NewMockKeyWithID(23))
+
+					return storage
+				}(),
+				clock: clock,
+			},
+		},
+		{
+			name: "with value and its expiration time greater than the current one",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(func(handler hashmap.Handler) bool {
+							return handler(NewMockKeyWithID(23), cache.Value{
+								Data:           "data",
+								ExpirationTime: clock().Add(time.Second),
+							})
+						})
+
+					return storage
+				}(),
+				clock: clock,
+			},
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gc := PartialGC{data.fields.storage, data.fields.clock}
