@@ -27,7 +27,7 @@ func (key StringKey) Equals(other interface{}) bool {
 
 func Example() {
 	storage := hashmap.NewConcurrentHashMap()
-	gcObj := gc.NewTotalGC(storage, time.Now)
+	gcObj := gc.NewPartialGC(storage, time.Now)
 	go gc.Run(context.Background(), gcObj, time.Millisecond)
 
 	timeZones := cache.NewCache(storage, time.Now)
