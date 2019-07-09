@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+//go:generate mockery -name=GC -inpkg -case=underscore -testonly
+
 // GC ...
 type GC interface {
 	Clean()
