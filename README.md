@@ -79,6 +79,13 @@ BenchmarkCacheGetting_withTotalGC/Get-8         	 5000000	      3567 ns/op	     
 BenchmarkCacheGetting_withTotalGC/GetWithGC-8   	 2000000	      9114 ns/op	    1026 B/op	      69 allocs/op
 ```
 
+With the partial GC:
+
+```
+BenchmarkCacheGetting_withPartialGC/Get-8         	 5000000	      3766 ns/op	     489 B/op	      34 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC-8   	 2000000	      7805 ns/op	     877 B/op	      57 allocs/op
+```
+
 ## License
 
 The MIT License (MIT)
