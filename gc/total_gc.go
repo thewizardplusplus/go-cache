@@ -1,9 +1,6 @@
 package gc
 
 import (
-	"context"
-	"time"
-
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -18,18 +15,13 @@ type Storage interface {
 
 // TotalGC ...
 type TotalGC struct {
-	period  time.Duration
 	storage Storage
 	clock   cache.Clock
 }
 
 // NewTotalGC ...
-func NewTotalGC(
-	period time.Duration,
-	storage Storage,
-	clock cache.Clock,
-) TotalGC {
-	return TotalGC{period, storage, clock}
+func NewTotalGC(storage Storage, clock cache.Clock) TotalGC {
+	return TotalGC{storage, clock}
 }
 
 // Clean ...
@@ -41,19 +33,4 @@ func (gc TotalGC) Clean() {
 
 		return true
 	})
-}
-
-// Run ...
-func (gc TotalGC) Run(ctx context.Context) {
-	ticker := time.NewTicker(gc.period)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			gc.Clean()
-		case <-ctx.Done():
-			return
-		}
-	}
 }

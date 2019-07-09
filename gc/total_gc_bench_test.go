@@ -63,8 +63,8 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 			cache := cache.NewCache(storage, time.Now)
 			data.prepare(cache)
 
-			gc := NewTotalGC(time.Nanosecond, storage, time.Now)
-			go gc.Run(context.Background())
+			gc := NewTotalGC(storage, time.Now)
+			go Run(context.Background(), gc, time.Nanosecond)
 
 			// add concurrent load
 			go func() {
