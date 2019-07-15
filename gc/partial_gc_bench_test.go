@@ -53,7 +53,12 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 			// add concurrent load
 			go func() {
 				for {
-					setItem(cache, rand.Intn(sizeForBench))
+					select {
+					case <-ctx.Done():
+						return
+					default:
+						setItem(cache, rand.Intn(sizeForBench))
+					}
 				}
 			}()
 

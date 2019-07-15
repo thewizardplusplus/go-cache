@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"encoding/binary"
 	"hash/fnv"
 	"math/rand"
@@ -62,9 +63,17 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 			data.prepare(cache)
 
 			// add concurrent load
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
 			go func() {
 				for {
-					setItem(cache, rand.Intn(sizeForBench))
+					select {
+					case <-ctx.Done():
+						return
+					default:
+						setItem(cache, rand.Intn(sizeForBench))
+					}
 				}
 			}()
 
