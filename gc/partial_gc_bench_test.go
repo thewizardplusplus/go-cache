@@ -48,7 +48,7 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 			defer cancel()
 
 			gc := NewPartialGC(storage, time.Now)
-			go Run(ctx, gc, time.Nanosecond)
+			go Run(ctx, gc, periodForBench)
 
 			// add concurrent load
 			go func() {

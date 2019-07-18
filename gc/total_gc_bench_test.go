@@ -26,7 +26,8 @@ func (key IntKey) Equals(other interface{}) bool {
 }
 
 const (
-	sizeForBench = 1000
+	sizeForBench   = 1000
+	periodForBench = time.Nanosecond
 )
 
 func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
@@ -67,7 +68,7 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 			defer cancel()
 
 			gc := NewTotalGC(storage, time.Now)
-			go Run(ctx, gc, time.Nanosecond)
+			go Run(ctx, gc, periodForBench)
 
 			// add concurrent load
 			go func() {
