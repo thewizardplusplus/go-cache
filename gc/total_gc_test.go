@@ -125,7 +125,35 @@ func TestTotalGC_handleIteration(test *testing.T) {
 		args   args
 		want   assert.BoolAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name: "with a not expired value",
+			fields: fields{
+				storage: new(MockStorage),
+				clock:   clock,
+			},
+			args: args{
+				key:   NewMockKeyWithID(23),
+				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+			},
+			want: assert.True,
+		},
+		{
+			name: "with an expired value",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Delete", NewMockKeyWithID(23))
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key:   NewMockKeyWithID(23),
+				value: cache.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+			},
+			want: assert.True,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gc := TotalGC{data.fields.storage, data.fields.clock}
