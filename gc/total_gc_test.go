@@ -109,6 +109,34 @@ func TestTotalGC_Clean(test *testing.T) {
 	}
 }
 
+func TestTotalGC_handleIteration(test *testing.T) {
+	type fields struct {
+		storage Storage
+		clock   cache.Clock
+	}
+	type args struct {
+		key   hashmap.Key
+		value interface{}
+	}
+
+	for _, data := range []struct {
+		name   string
+		fields fields
+		args   args
+		want   assert.BoolAssertionFunc
+	}{
+		// TODO: add test cases
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gc := TotalGC{data.fields.storage, data.fields.clock}
+			got := gc.handleIteration(data.args.key, data.args.value)
+
+			mock.AssertExpectationsForObjects(test, data.fields.storage, data.args.key)
+			data.want(test, got)
+		})
+	}
+}
+
 func getPointer(value interface{}) uintptr {
 	return reflect.ValueOf(value).Pointer()
 }
