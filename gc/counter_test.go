@@ -56,7 +56,21 @@ func Test_counter_stopClean(test *testing.T) {
 		fields fields
 		want   assert.BoolAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name:   "without iterations",
+			fields: fields{iterated: 0},
+			want:   assert.True,
+		},
+		{
+			name:   "with expired percent less than minimum",
+			fields: fields{iterated: 15, expired: 3},
+			want:   assert.True,
+		},
+		{
+			name:   "with expired percent greater than minimum",
+			fields: fields{iterated: 15, expired: 5},
+			want:   assert.False,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			var counter counter // nolint: vetshadow
