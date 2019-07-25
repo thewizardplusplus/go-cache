@@ -29,8 +29,7 @@ func (gc PartialGC) Clean() {
 			}
 
 			counter.iterated++
-			// iterate over maxIteratedCount values only
-			return counter.iterated < maxIteratedCount
+			return !counter.stopIterate()
 		})
 
 		// if a percent of expired values less than minExpiredPercent, stop cleaning
