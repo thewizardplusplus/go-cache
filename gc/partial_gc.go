@@ -11,11 +11,6 @@ type PartialGC struct {
 	clock   cache.Clock
 }
 
-const (
-	maxIteratedValuesCount  = 20
-	minExpiredValuesPercent = 0.25
-)
-
 // NewPartialGC ...
 func NewPartialGC(storage Storage, clock cache.Clock) PartialGC {
 	return PartialGC{storage, clock}
@@ -34,14 +29,13 @@ func (gc PartialGC) Clean() {
 			}
 
 			counter.iterated++
-			// iterate over maxIteratedValuesCount values only
-			return counter.iterated < maxIteratedValuesCount
+			// iterate over maxIteratedCount values only
+			return counter.iterated < maxIteratedCount
 		})
 
-		// if a percent of expired values less than minExpiredValuesPercent,
-		// stop cleaning
+		// if a percent of expired values less than minExpiredPercent, stop cleaning
 		expiredValuesPercent := float64(counter.expired) / float64(counter.iterated)
-		if counter.iterated == 0 || expiredValuesPercent < minExpiredValuesPercent {
+		if counter.iterated == 0 || expiredValuesPercent < minExpiredPercent {
 			break
 		}
 	}
