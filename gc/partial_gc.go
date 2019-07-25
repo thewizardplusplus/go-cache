@@ -26,23 +26,22 @@ func (gc PartialGC) Clean() {
 	// algorithm is based on expiration in Redis
 	// see for details: https://redis.io/commands/expire#how-redis-expires-keys
 	for {
-		var expiredCount int
-		var iteratedCount int
+		var counter counter // nolint: vetshadow
 		gc.storage.Iterate(func(key hashmap.Key, value interface{}) bool {
 			if value.(cache.Value).IsExpired(gc.clock) {
 				gc.storage.Delete(key)
-				expiredCount++
+				counter.expired++
 			}
 
-			iteratedCount++
+			counter.iterated++
 			// iterate over maxIteratedValuesCount values only
-			return iteratedCount < maxIteratedValuesCount
+			return counter.iterated < maxIteratedValuesCount
 		})
 
 		// if a percent of expired values less than minExpiredValuesPercent,
 		// stop cleaning
-		expiredValuesPercent := float64(expiredCount) / float64(iteratedCount)
-		if iteratedCount == 0 || expiredValuesPercent < minExpiredValuesPercent {
+		expiredValuesPercent := float64(counter.expired) / float64(counter.iterated)
+		if counter.iterated == 0 || expiredValuesPercent < minExpiredValuesPercent {
 			break
 		}
 	}
