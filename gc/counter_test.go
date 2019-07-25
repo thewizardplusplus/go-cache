@@ -17,7 +17,21 @@ func Test_counter_stopIterate(test *testing.T) {
 		fields fields
 		want   assert.BoolAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name:   "without iterations",
+			fields: fields{iterated: 0},
+			want:   assert.False,
+		},
+		{
+			name:   "with iteration count less than maximum",
+			fields: fields{iterated: 10},
+			want:   assert.False,
+		},
+		{
+			name:   "with iteration count greater than maximum",
+			fields: fields{iterated: 30},
+			want:   assert.True,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			var counter counter // nolint: vetshadow
