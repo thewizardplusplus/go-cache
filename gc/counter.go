@@ -13,3 +13,8 @@ const (
 func (counter counter) stopIterate() bool {
 	return counter.iterated >= maxIteratedCount
 }
+
+func (counter counter) stopClean() bool {
+	expiredPercent := float64(counter.expired) / float64(counter.iterated)
+	return counter.iterated == 0 || expiredPercent < minExpiredPercent
+}

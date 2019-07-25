@@ -32,9 +32,7 @@ func (gc PartialGC) Clean() {
 			return !counter.stopIterate()
 		})
 
-		// if a percent of expired values less than minExpiredPercent, stop cleaning
-		expiredValuesPercent := float64(counter.expired) / float64(counter.iterated)
-		if counter.iterated == 0 || expiredValuesPercent < minExpiredPercent {
+		if counter.stopClean() {
 			break
 		}
 	}
