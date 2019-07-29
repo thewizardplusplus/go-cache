@@ -38,7 +38,55 @@ func Test_iterator_handleIteration(test *testing.T) {
 		wantCounter counter
 		wantOk      assert.BoolAssertionFunc
 	}{
-		// TODO: add test cases
+		{
+			name: "with a not expired value " +
+				"and with iteration count less than maximum",
+			fields: fields{
+				counter: counter{iterated: 15, expired: 3},
+				storage: new(MockStorage),
+				clock:   clock,
+			},
+			args: args{
+				key:   NewMockKeyWithID(23),
+				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+			},
+			wantCounter: counter{iterated: 16, expired: 3},
+			wantOk:      assert.True,
+		},
+		{
+			name: "with a not expired value " +
+				"and with iteration count greater than maximum",
+			fields: fields{
+				counter: counter{iterated: 25, expired: 3},
+				storage: new(MockStorage),
+				clock:   clock,
+			},
+			args: args{
+				key:   NewMockKeyWithID(23),
+				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+			},
+			wantCounter: counter{iterated: 26, expired: 3},
+			wantOk:      assert.False,
+		},
+		{
+			name: "with an expired value",
+			fields: fields{
+				counter: counter{iterated: 15, expired: 3},
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.On("Delete", NewMockKeyWithID(23))
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				key:   NewMockKeyWithID(23),
+				value: cache.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+			},
+			wantCounter: counter{iterated: 16, expired: 4},
+			wantOk:      assert.True,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			iterator := &iterator{
