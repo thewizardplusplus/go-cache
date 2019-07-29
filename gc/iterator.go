@@ -10,3 +10,7 @@ type iterator struct {
 	storage Storage
 	clock   cache.Clock
 }
+
+func newIterator(storage Storage, clock cache.Clock) *iterator {
+	return &iterator{storage: storage, clock: clock}
+}
