@@ -2,7 +2,6 @@ package gc
 
 import (
 	cache "github.com/thewizardplusplus/go-cache"
-	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 // PartialGC ...
@@ -21,18 +20,10 @@ func (gc PartialGC) Clean() {
 	// algorithm is based on expiration in Redis
 	// see for details: https://redis.io/commands/expire#how-redis-expires-keys
 	for {
-		var counter counter // nolint: vetshadow
-		gc.storage.Iterate(func(key hashmap.Key, value interface{}) bool {
-			if value.(cache.Value).IsExpired(gc.clock) {
-				gc.storage.Delete(key)
-				counter.expired++
-			}
+		iterator := newIterator(gc.storage, gc.clock)
+		gc.storage.Iterate(iterator.handleIteration)
 
-			counter.iterated++
-			return !counter.stopIterate()
-		})
-
-		if counter.stopClean() {
+		if iterator.stopClean() {
 			break
 		}
 	}
