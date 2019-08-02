@@ -3,6 +3,7 @@ package gc
 import (
 	"context"
 	"encoding/binary"
+	"fmt"
 	"hash/fnv"
 	"math/rand"
 	"testing"
@@ -31,73 +32,76 @@ const (
 )
 
 func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
-	for _, data := range []struct {
-		name      string
-		prepare   func(cache cache.Cache)
-		benchmark func(cache cache.Cache)
-	}{
-		{
-			name: "Get",
-			prepare: func(cache cache.Cache) {
-				for i := 0; i < sizeForBench; i++ {
-					setItem(cache, i)
-				}
-			},
-			benchmark: func(cache cache.Cache) {
-				cache.Get(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
-			},
-		},
-		{
-			name: "GetWithGC",
-			prepare: func(cache cache.Cache) {
-				for i := 0; i < sizeForBench; i++ {
-					setItem(cache, i)
-				}
-			},
-			benchmark: func(cache cache.Cache) {
-				cache.GetWithGC(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
-			},
-		},
-	} {
-		benchmark.Run(data.name, func(benchmark *testing.B) {
-			storage := hashmap.NewConcurrentHashMap()
-			cache := cache.NewCache(storage, time.Now)
-			data.prepare(cache)
-
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
-
-			gc := NewTotalGC(storage, time.Now)
-			go Run(ctx, gc, periodForBench)
-
-			// add concurrent load
-			go func() {
-				ticker := time.NewTicker(periodForBench)
-				defer ticker.Stop()
-
-				for {
-					select {
-					case <-ticker.C:
-						setItem(cache, rand.Intn(sizeForBench))
-					case <-ctx.Done():
-						return
+	for _, expiredPercent := range []float32{0.01, 0.2, 0.3, 0.99} {
+		for _, data := range []struct {
+			name      string
+			prepare   func(cache cache.Cache)
+			benchmark func(cache cache.Cache)
+		}{
+			{
+				name: "Get",
+				prepare: func(cache cache.Cache) {
+					for i := 0; i < sizeForBench; i++ {
+						setItem(cache, i, expiredPercent)
 					}
+				},
+				benchmark: func(cache cache.Cache) {
+					cache.Get(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+				},
+			},
+			{
+				name: "GetWithGC",
+				prepare: func(cache cache.Cache) {
+					for i := 0; i < sizeForBench; i++ {
+						setItem(cache, i, expiredPercent)
+					}
+				},
+				benchmark: func(cache cache.Cache) {
+					cache.GetWithGC(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+				},
+			},
+		} {
+			name := fmt.Sprintf("%s/%.2f", data.name, expiredPercent)
+			benchmark.Run(name, func(benchmark *testing.B) {
+				storage := hashmap.NewConcurrentHashMap()
+				cache := cache.NewCache(storage, time.Now)
+				data.prepare(cache)
+
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+
+				gc := NewTotalGC(storage, time.Now)
+				go Run(ctx, gc, periodForBench)
+
+				// add concurrent load
+				go func() {
+					ticker := time.NewTicker(periodForBench)
+					defer ticker.Stop()
+
+					for {
+						select {
+						case <-ticker.C:
+							setItem(cache, rand.Intn(sizeForBench), expiredPercent)
+						case <-ctx.Done():
+							return
+						}
+					}
+				}()
+
+				benchmark.ResetTimer()
+
+				for i := 0; i < benchmark.N; i++ {
+					data.benchmark(cache)
 				}
-			}()
-
-			benchmark.ResetTimer()
-
-			for i := 0; i < benchmark.N; i++ {
-				data.benchmark(cache)
-			}
-		})
+			})
+		}
 	}
 }
 
-func setItem(cache cache.Cache, key int) {
+func setItem(cache cache.Cache, key int, expiredPercent float32) {
 	var ttl time.Duration
-	// half of items will be already expired
-	if rand.Float32() < 0.5 {
+	// part of items will be already expired
+	if rand.Float32() < expiredPercent {
 		ttl = -time.Second
 	}
 

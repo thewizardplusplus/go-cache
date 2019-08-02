@@ -27,6 +27,7 @@ func (key IntKey) Equals(other interface{}) bool {
 const (
 	sizeForBench   = 1000
 	periodForBench = time.Nanosecond
+	expiredPercent = 0.5
 )
 
 func BenchmarkCacheGetting(benchmark *testing.B) {
@@ -92,8 +93,8 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 
 func setItem(cache Cache, key int) {
 	var ttl time.Duration
-	// half of items will be already expired
-	if rand.Float32() < 0.5 {
+	// part of items will be already expired
+	if rand.Float32() < expiredPercent {
 		ttl = -time.Second
 	}
 
