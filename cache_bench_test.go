@@ -25,7 +25,8 @@ func (key IntKey) Equals(other interface{}) bool {
 }
 
 const (
-	sizeForBench = 1000
+	sizeForBench   = 1000
+	periodForBench = time.Nanosecond
 )
 
 func BenchmarkCacheGetting(benchmark *testing.B) {
@@ -67,12 +68,15 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 			defer cancel()
 
 			go func() {
+				ticker := time.NewTicker(periodForBench)
+				defer ticker.Stop()
+
 				for {
 					select {
+					case <-ticker.C:
+						setItem(cache, rand.Intn(sizeForBench))
 					case <-ctx.Done():
 						return
-					default:
-						setItem(cache, rand.Intn(sizeForBench))
 					}
 				}
 			}()

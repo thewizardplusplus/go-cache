@@ -72,12 +72,15 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 
 			// add concurrent load
 			go func() {
+				ticker := time.NewTicker(periodForBench)
+				defer ticker.Stop()
+
 				for {
 					select {
+					case <-ticker.C:
+						setItem(cache, rand.Intn(sizeForBench))
 					case <-ctx.Done():
 						return
-					default:
-						setItem(cache, rand.Intn(sizeForBench))
 					}
 				}
 			}()
