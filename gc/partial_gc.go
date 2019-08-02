@@ -16,9 +16,10 @@ func NewPartialGC(storage Storage, clock cache.Clock) PartialGC {
 }
 
 // Clean ...
+//
+// Its algorithm is based on expiration in Redis.
+// See for details: https://redis.io/commands/expire#how-redis-expires-keys
 func (gc PartialGC) Clean() {
-	// algorithm is based on expiration in Redis
-	// see for details: https://redis.io/commands/expire#how-redis-expires-keys
 	for {
 		iterator := newIterator(gc.storage, gc.clock)
 		gc.storage.Iterate(iterator.handleIteration)
