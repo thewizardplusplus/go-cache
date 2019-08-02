@@ -30,7 +30,7 @@ func TestPartialGC_Clean(test *testing.T) {
 		fields fields
 	}{
 		{
-			name: "without values",
+			name: "without iterations",
 			fields: fields{
 				storage: func() Storage {
 					storage := new(MockStorage)
@@ -38,7 +38,8 @@ func TestPartialGC_Clean(test *testing.T) {
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
 							return handler != nil
 						})).
-						Return(true)
+						Return(true).
+						Once()
 
 					return storage
 				}(),
@@ -46,27 +47,33 @@ func TestPartialGC_Clean(test *testing.T) {
 			},
 		},
 		{
-			name: "with value and its expiration time less than the current one",
+			name: "with a one try",
 			fields: fields{
 				storage: func() Storage {
-					var expiredCount int
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
 							return handler != nil
 						})).
 						Return(func(handler hashmap.Handler) bool {
-							expiredCount++
-							if expiredCount > 1 {
-								return true
+							for i := 0; i < 15; i++ {
+								var expirationTime time.Time
+								if i < 3 {
+									expirationTime = clock().Add(-time.Second)
+								} else {
+									expirationTime = clock().Add(time.Second)
+								}
+
+								handler(NewMockKeyWithID(23), cache.Value{
+									Data:           "data",
+									ExpirationTime: expirationTime,
+								})
 							}
 
-							return handler(NewMockKeyWithID(23), cache.Value{
-								Data:           "data",
-								ExpirationTime: clock().Add(-time.Second),
-							})
-						})
-					storage.On("Delete", NewMockKeyWithID(23))
+							return true
+						}).
+						Once()
+					storage.On("Delete", NewMockKeyWithID(23)).Times(3)
 
 					return storage
 				}(),
@@ -74,20 +81,37 @@ func TestPartialGC_Clean(test *testing.T) {
 			},
 		},
 		{
-			name: "with value and its expiration time greater than the current one",
+			name: "with few tries",
 			fields: fields{
 				storage: func() Storage {
+					var try int
+
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
 							return handler != nil
 						})).
 						Return(func(handler hashmap.Handler) bool {
-							return handler(NewMockKeyWithID(23), cache.Value{
-								Data:           "data",
-								ExpirationTime: clock().Add(time.Second),
-							})
-						})
+							for i := 0; i < 15; i++ {
+								var expirationTime time.Time
+								if try == 0 && i < 5 {
+									expirationTime = clock().Add(-time.Second)
+								} else {
+									expirationTime = clock().Add(time.Second)
+								}
+
+								handler(NewMockKeyWithID(23), cache.Value{
+									Data:           "data",
+									ExpirationTime: expirationTime,
+								})
+							}
+
+							try++
+
+							return true
+						}).
+						Twice()
+					storage.On("Delete", NewMockKeyWithID(23)).Times(5)
 
 					return storage
 				}(),
