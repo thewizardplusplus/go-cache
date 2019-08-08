@@ -1,6 +1,8 @@
 package gc
 
 import (
+	"context"
+
 	cache "github.com/thewizardplusplus/go-cache"
 )
 
@@ -19,7 +21,7 @@ func NewPartialGC(storage Storage, clock cache.Clock) PartialGC {
 //
 // Its algorithm is based on expiration in Redis.
 // See for details: https://redis.io/commands/expire#how-redis-expires-keys
-func (gc PartialGC) Clean() {
+func (gc PartialGC) Clean(ctx context.Context) {
 	for {
 		iterator := newIterator(gc.storage, gc.clock)
 		gc.storage.Iterate(iterator.handleIteration)

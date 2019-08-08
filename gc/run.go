@@ -9,7 +9,7 @@ import (
 
 // GC ...
 type GC interface {
-	Clean()
+	Clean(ctx context.Context)
 }
 
 // Run ...
@@ -20,7 +20,7 @@ func Run(ctx context.Context, gc GC, period time.Duration) {
 	for {
 		select {
 		case <-ticker.C:
-			gc.Clean()
+			gc.Clean(ctx)
 		case <-ctx.Done():
 			return
 		}

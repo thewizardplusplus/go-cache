@@ -1,6 +1,7 @@
 package gc
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -41,7 +42,7 @@ func TestTotalGC_Clean(test *testing.T) {
 		})).
 		Return(true)
 
-	gc.Clean()
+	gc.Clean(context.Background())
 
 	mock.AssertExpectationsForObjects(test, gc.storage)
 }

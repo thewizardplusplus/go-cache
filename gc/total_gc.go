@@ -1,6 +1,8 @@
 package gc
 
 import (
+	"context"
+
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -25,7 +27,7 @@ func NewTotalGC(storage Storage, clock cache.Clock) TotalGC {
 }
 
 // Clean ...
-func (gc TotalGC) Clean() {
+func (gc TotalGC) Clean(ctx context.Context) {
 	gc.storage.Iterate(gc.handleIteration)
 }
 

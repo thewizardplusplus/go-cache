@@ -1,6 +1,7 @@
 package gc
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -121,7 +122,7 @@ func TestPartialGC_Clean(test *testing.T) {
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gc := PartialGC{data.fields.storage, data.fields.clock}
-			gc.Clean()
+			gc.Clean(context.Background())
 
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
 		})
