@@ -25,10 +25,14 @@ func TestPartialGC_Clean(test *testing.T) {
 		storage Storage
 		clock   cache.Clock
 	}
+	type args struct {
+		ctx context.Context
+	}
 
 	for _, data := range []struct {
 		name   string
 		fields fields
+		args   args
 	}{
 		{
 			name: "without iterations",
@@ -45,6 +49,9 @@ func TestPartialGC_Clean(test *testing.T) {
 					return storage
 				}(),
 				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
 			},
 		},
 		{
@@ -79,6 +86,9 @@ func TestPartialGC_Clean(test *testing.T) {
 					return storage
 				}(),
 				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
 			},
 		},
 		{
@@ -118,11 +128,29 @@ func TestPartialGC_Clean(test *testing.T) {
 				}(),
 				clock: clock,
 			},
+			args: args{
+				ctx: context.Background(),
+			},
+		},
+		{
+			name: "with a canceled context",
+			fields: fields{
+				storage: new(MockStorage),
+				clock:   clock,
+			},
+			args: args{
+				ctx: func() context.Context {
+					ctx, cancel := context.WithCancel(context.Background())
+					cancel()
+
+					return ctx
+				}(),
+			},
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			gc := PartialGC{data.fields.storage, data.fields.clock}
-			gc.Clean(context.Background())
+			gc.Clean(data.args.ctx)
 
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
 		})
