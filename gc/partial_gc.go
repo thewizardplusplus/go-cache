@@ -23,11 +23,16 @@ func NewPartialGC(storage Storage, clock cache.Clock) PartialGC {
 // See for details: https://redis.io/commands/expire#how-redis-expires-keys
 func (gc PartialGC) Clean(ctx context.Context) {
 	for {
-		iterator := newIterator(gc.storage, gc.clock)
-		gc.storage.Iterate(iterator.handleIteration)
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			iterator := newIterator(gc.storage, gc.clock)
+			gc.storage.Iterate(iterator.handleIteration)
 
-		if iterator.stopClean() {
-			break
+			if iterator.stopClean() {
+				return
+			}
 		}
 	}
 }
