@@ -25,13 +25,8 @@ func (key IntKey) Equals(other interface{}) bool {
 	return key == other.(IntKey)
 }
 
-const (
-	periodForBench = time.Nanosecond
-	expiredPercent = 0.5
-)
-
 func BenchmarkCacheGetting(benchmark *testing.B) {
-	for _, sizeForBench := range []int{1e2, 1e4, 1e6} {
+	for _, storageSize := range []int{1e2, 1e4, 1e6} {
 		for _, data := range []struct {
 			name      string
 			prepare   func(cache Cache)
@@ -40,27 +35,27 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 			{
 				name: "Get",
 				prepare: func(cache Cache) {
-					for i := 0; i < sizeForBench; i++ {
+					for i := 0; i < storageSize; i++ {
 						setItem(cache, i)
 					}
 				},
 				benchmark: func(cache Cache) {
-					cache.Get(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+					cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
 				},
 			},
 			{
 				name: "GetWithGC",
 				prepare: func(cache Cache) {
-					for i := 0; i < sizeForBench; i++ {
+					for i := 0; i < storageSize; i++ {
 						setItem(cache, i)
 					}
 				},
 				benchmark: func(cache Cache) {
-					cache.GetWithGC(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+					cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
 				},
 			},
 		} {
-			name := fmt.Sprintf("%s/%d", data.name, sizeForBench)
+			name := fmt.Sprintf("%s/%d", data.name, storageSize)
 			benchmark.Run(name, func(benchmark *testing.B) {
 				storage := hashmap.NewConcurrentHashMap()
 				cache := NewCache(storage, time.Now)
@@ -71,13 +66,13 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 				defer cancel()
 
 				go func() {
-					ticker := time.NewTicker(periodForBench)
+					ticker := time.NewTicker(time.Nanosecond)
 					defer ticker.Stop()
 
 					for {
 						select {
 						case <-ticker.C:
-							setItem(cache, rand.Intn(sizeForBench))
+							setItem(cache, rand.Intn(storageSize))
 						case <-ctx.Done():
 							return
 						}
@@ -96,8 +91,8 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 
 func setItem(cache Cache, key int) {
 	var ttl time.Duration
-	// part of items will be already expired
-	if rand.Float32() < expiredPercent {
+	// half of items will be already expired
+	if rand.Float32() < 0.5 {
 		ttl = -time.Second
 	}
 

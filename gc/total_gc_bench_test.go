@@ -31,7 +31,7 @@ const (
 )
 
 func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
-	for _, sizeForBench := range []int{1e2, 1e4, 1e6} {
+	for _, storageSize := range []int{1e2, 1e4, 1e6} {
 		for _, expiredPercent := range []float32{0.01, 0.2, 0.3, 0.99} {
 			for _, data := range []struct {
 				name      string
@@ -41,27 +41,27 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 				{
 					name: "Get",
 					prepare: func(cache cache.Cache) {
-						for i := 0; i < sizeForBench; i++ {
+						for i := 0; i < storageSize; i++ {
 							setItem(cache, i, expiredPercent)
 						}
 					},
 					benchmark: func(cache cache.Cache) {
-						cache.Get(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+						cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
 					},
 				},
 				{
 					name: "GetWithGC",
 					prepare: func(cache cache.Cache) {
-						for i := 0; i < sizeForBench; i++ {
+						for i := 0; i < storageSize; i++ {
 							setItem(cache, i, expiredPercent)
 						}
 					},
 					benchmark: func(cache cache.Cache) {
-						cache.GetWithGC(IntKey(rand.Intn(sizeForBench))) // nolint: errcheck
+						cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
 					},
 				},
 			} {
-				name := fmt.Sprintf("%s/%d/%.2f", data.name, sizeForBench, expiredPercent)
+				name := fmt.Sprintf("%s/%d/%.2f", data.name, storageSize, expiredPercent)
 				benchmark.Run(name, func(benchmark *testing.B) {
 					storage := hashmap.NewConcurrentHashMap()
 					cache := cache.NewCache(storage, time.Now)
@@ -81,7 +81,7 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 						for {
 							select {
 							case <-ticker.C:
-								setItem(cache, rand.Intn(sizeForBench), expiredPercent)
+								setItem(cache, rand.Intn(storageSize), expiredPercent)
 							case <-ctx.Done():
 								return
 							}
