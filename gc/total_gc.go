@@ -28,7 +28,7 @@ func NewTotalGC(storage Storage, clock cache.Clock) TotalGC {
 
 // Clean ...
 func (gc TotalGC) Clean(ctx context.Context) {
-	gc.storage.Iterate(gc.handleIteration)
+	gc.storage.Iterate(withInterruption(ctx, gc.handleIteration))
 }
 
 func (gc TotalGC) handleIteration(key hashmap.Key, value interface{}) bool {

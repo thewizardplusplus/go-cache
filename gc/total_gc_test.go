@@ -36,9 +36,7 @@ func TestTotalGC_Clean(test *testing.T) {
 	gc.storage = new(MockStorage)
 	gc.storage.(*MockStorage).
 		On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
-			want := reflect.ValueOf(gc.handleIteration).Pointer()
-			got := reflect.ValueOf(handler).Pointer()
-			return want == got
+			return handler != nil
 		})).
 		Return(true)
 

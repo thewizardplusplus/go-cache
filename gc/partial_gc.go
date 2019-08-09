@@ -28,7 +28,7 @@ func (gc PartialGC) Clean(ctx context.Context) {
 			return
 		default:
 			iterator := newIterator(gc.storage, gc.clock)
-			gc.storage.Iterate(iterator.handleIteration)
+			gc.storage.Iterate(withInterruption(ctx, iterator.handleIteration))
 
 			if iterator.stopClean() {
 				return
