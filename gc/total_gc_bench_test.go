@@ -31,41 +31,41 @@ const (
 )
 
 func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
-	for _, storageSize := range []int{1e2, 1e4, 1e6} {
-		for _, expiredPercent := range []float32{0.01, 0.2, 0.3, 0.99} {
-			for _, data := range []struct {
-				name      string
-				prepare   func(cache cache.Cache)
-				benchmark func(cache cache.Cache)
-			}{
-				{
-					name: "Get",
-					prepare: func(cache cache.Cache) {
-						for i := 0; i < storageSize; i++ {
-							setItem(cache, i, expiredPercent)
-						}
-					},
-					benchmark: func(cache cache.Cache) {
-						cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
-					},
-				},
-				{
-					name: "GetWithGC",
-					prepare: func(cache cache.Cache) {
-						for i := 0; i < storageSize; i++ {
-							setItem(cache, i, expiredPercent)
-						}
-					},
-					benchmark: func(cache cache.Cache) {
-						cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
-					},
-				},
-			} {
+	for _, data := range []struct {
+		name      string
+		prepare   func(cache cache.Cache, storageSize int, expiredPercent float32)
+		benchmark func(cache cache.Cache, storageSize int)
+	}{
+		{
+			name: "Get",
+			prepare: func(cache cache.Cache, storageSize int, expiredPercent float32) {
+				for i := 0; i < storageSize; i++ {
+					setItem(cache, i, expiredPercent)
+				}
+			},
+			benchmark: func(cache cache.Cache, storageSize int) {
+				cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
+			},
+		},
+		{
+			name: "GetWithGC",
+			prepare: func(cache cache.Cache, storageSize int, expiredPercent float32) {
+				for i := 0; i < storageSize; i++ {
+					setItem(cache, i, expiredPercent)
+				}
+			},
+			benchmark: func(cache cache.Cache, storageSize int) {
+				cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
+			},
+		},
+	} {
+		for _, storageSize := range []int{1e2, 1e4, 1e6} {
+			for _, expiredPercent := range []float32{0.01, 0.2, 0.3, 0.99} {
 				name := fmt.Sprintf("%s/%d/%.2f", data.name, storageSize, expiredPercent)
 				benchmark.Run(name, func(benchmark *testing.B) {
 					storage := hashmap.NewConcurrentHashMap()
 					cache := cache.NewCache(storage, time.Now)
-					data.prepare(cache)
+					data.prepare(cache, storageSize, expiredPercent)
 
 					ctx, cancel := context.WithCancel(context.Background())
 					defer cancel()
@@ -91,7 +91,7 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 					benchmark.ResetTimer()
 
 					for i := 0; i < benchmark.N; i++ {
-						data.benchmark(cache)
+						data.benchmark(cache, storageSize)
 					}
 				})
 			}

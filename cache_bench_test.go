@@ -26,40 +26,40 @@ func (key IntKey) Equals(other interface{}) bool {
 }
 
 func BenchmarkCacheGetting(benchmark *testing.B) {
-	for _, storageSize := range []int{1e2, 1e4, 1e6} {
-		for _, data := range []struct {
-			name      string
-			prepare   func(cache Cache)
-			benchmark func(cache Cache)
-		}{
-			{
-				name: "Get",
-				prepare: func(cache Cache) {
-					for i := 0; i < storageSize; i++ {
-						setItem(cache, i)
-					}
-				},
-				benchmark: func(cache Cache) {
-					cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
-				},
+	for _, data := range []struct {
+		name      string
+		prepare   func(cache Cache, storageSize int)
+		benchmark func(cache Cache, storageSize int)
+	}{
+		{
+			name: "Get",
+			prepare: func(cache Cache, storageSize int) {
+				for i := 0; i < storageSize; i++ {
+					setItem(cache, i)
+				}
 			},
-			{
-				name: "GetWithGC",
-				prepare: func(cache Cache) {
-					for i := 0; i < storageSize; i++ {
-						setItem(cache, i)
-					}
-				},
-				benchmark: func(cache Cache) {
-					cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
-				},
+			benchmark: func(cache Cache, storageSize int) {
+				cache.Get(IntKey(rand.Intn(storageSize))) // nolint: errcheck
 			},
-		} {
+		},
+		{
+			name: "GetWithGC",
+			prepare: func(cache Cache, storageSize int) {
+				for i := 0; i < storageSize; i++ {
+					setItem(cache, i)
+				}
+			},
+			benchmark: func(cache Cache, storageSize int) {
+				cache.GetWithGC(IntKey(rand.Intn(storageSize))) // nolint: errcheck
+			},
+		},
+	} {
+		for _, storageSize := range []int{1e2, 1e4, 1e6} {
 			name := fmt.Sprintf("%s/%d", data.name, storageSize)
 			benchmark.Run(name, func(benchmark *testing.B) {
 				storage := hashmap.NewConcurrentHashMap()
 				cache := NewCache(storage, time.Now)
-				data.prepare(cache)
+				data.prepare(cache, storageSize)
 
 				// add concurrent load
 				ctx, cancel := context.WithCancel(context.Background())
@@ -82,7 +82,7 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 				benchmark.ResetTimer()
 
 				for i := 0; i < benchmark.N; i++ {
-					data.benchmark(cache)
+					data.benchmark(cache, storageSize)
 				}
 			})
 		}
