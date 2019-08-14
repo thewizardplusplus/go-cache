@@ -38,7 +38,25 @@ func TestTotalGC_Clean(test *testing.T) {
 		On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
 			return handler != nil
 		})).
-		Return(true)
+		Return(func(handler hashmap.Handler) bool {
+			for i := 0; i < 15; i++ {
+				var expirationTime time.Time
+				if i < 3 {
+					expirationTime = clock().Add(-time.Second)
+				} else {
+					expirationTime = clock().Add(time.Second)
+				}
+
+				handler(NewMockKeyWithID(23), cache.Value{
+					Data:           "data",
+					ExpirationTime: expirationTime,
+				})
+			}
+
+			return true
+		}).
+		Once()
+	gc.storage.(*MockStorage).On("Delete", NewMockKeyWithID(23)).Times(3)
 
 	gc.Clean(context.Background())
 
