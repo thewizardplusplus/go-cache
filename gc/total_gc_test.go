@@ -87,10 +87,12 @@ func TestTotalGC_Clean(test *testing.T) {
 									expirationTime = clock().Add(time.Second)
 								}
 
-								handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), cache.Value{
 									Data:           "data",
 									ExpirationTime: expirationTime,
-								})
+								}); !ok {
+									return false
+								}
 							}
 
 							return true
@@ -119,10 +121,12 @@ func TestTotalGC_Clean(test *testing.T) {
 							for i := 0; i < 15; i++ {
 								time.Sleep(timedTestDelay * 3 / 4)
 
-								handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), cache.Value{
 									Data:           "data",
 									ExpirationTime: clock().Add(-time.Second),
-								})
+								}); !ok {
+									return false
+								}
 							}
 
 							return true

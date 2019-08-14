@@ -20,6 +20,7 @@ func TestNewPartialGC(test *testing.T) {
 	assert.Equal(test, getPointer(time.Now), getPointer(gc.clock))
 }
 
+// nolint: gocyclo
 func TestPartialGC_Clean(test *testing.T) {
 	type fields struct {
 		storage Storage
@@ -72,10 +73,12 @@ func TestPartialGC_Clean(test *testing.T) {
 									expirationTime = clock().Add(time.Second)
 								}
 
-								handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), cache.Value{
 									Data:           "data",
 									ExpirationTime: expirationTime,
-								})
+								}); !ok {
+									return false
+								}
 							}
 
 							return true
@@ -103,6 +106,8 @@ func TestPartialGC_Clean(test *testing.T) {
 							return handler != nil
 						})).
 						Return(func(handler hashmap.Handler) bool {
+							defer func() { try++ }()
+
 							for i := 0; i < 15; i++ {
 								var expirationTime time.Time
 								if try == 0 && i < 5 {
@@ -111,13 +116,13 @@ func TestPartialGC_Clean(test *testing.T) {
 									expirationTime = clock().Add(time.Second)
 								}
 
-								handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), cache.Value{
 									Data:           "data",
 									ExpirationTime: expirationTime,
-								})
+								}); !ok {
+									return false
+								}
 							}
-
-							try++
 
 							return true
 						}).
@@ -160,10 +165,12 @@ func TestPartialGC_Clean(test *testing.T) {
 							for i := 0; i < 15; i++ {
 								time.Sleep(timedTestDelay * 3 / 4)
 
-								handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), cache.Value{
 									Data:           "data",
 									ExpirationTime: clock().Add(-time.Second),
-								})
+								}); !ok {
+									return false
+								}
 							}
 
 							return true
