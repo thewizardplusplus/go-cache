@@ -22,6 +22,10 @@ func NewMockKeyWithID(id int) *MockKeyWithID {
 	return &MockKeyWithID{ID: id}
 }
 
+const (
+	timedTestDelay = 100 * time.Millisecond
+)
+
 func TestNewTotalGC(test *testing.T) {
 	storage := new(MockStorage)
 	gc := NewTotalGC(storage, time.Now)
@@ -32,35 +36,124 @@ func TestNewTotalGC(test *testing.T) {
 }
 
 func TestTotalGC_Clean(test *testing.T) {
-	gc := TotalGC{nil, clock}
-	gc.storage = new(MockStorage)
-	gc.storage.(*MockStorage).
-		On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
-			return handler != nil
-		})).
-		Return(func(handler hashmap.Handler) bool {
-			for i := 0; i < 15; i++ {
-				var expirationTime time.Time
-				if i < 3 {
-					expirationTime = clock().Add(-time.Second)
-				} else {
-					expirationTime = clock().Add(time.Second)
-				}
+	type fields struct {
+		storage Storage
+		clock   cache.Clock
+	}
+	type args struct {
+		ctx context.Context
+	}
 
-				handler(NewMockKeyWithID(23), cache.Value{
-					Data:           "data",
-					ExpirationTime: expirationTime,
-				})
-			}
+	for _, data := range []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "without iterations",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(true).
+						Once()
 
-			return true
-		}).
-		Once()
-	gc.storage.(*MockStorage).On("Delete", NewMockKeyWithID(23)).Times(3)
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
+			},
+		},
+		{
+			name: "with iterations",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(func(handler hashmap.Handler) bool {
+							for i := 0; i < 15; i++ {
+								var expirationTime time.Time
+								if i < 3 {
+									expirationTime = clock().Add(-time.Second)
+								} else {
+									expirationTime = clock().Add(time.Second)
+								}
 
-	gc.Clean(context.Background())
+								handler(NewMockKeyWithID(23), cache.Value{
+									Data:           "data",
+									ExpirationTime: expirationTime,
+								})
+							}
 
-	mock.AssertExpectationsForObjects(test, gc.storage)
+							return true
+						}).
+						Once()
+					storage.On("Delete", NewMockKeyWithID(23)).Times(3)
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
+			},
+		},
+		{
+			name: "with canceled iterations",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(func(handler hashmap.Handler) bool {
+							for i := 0; i < 15; i++ {
+								time.Sleep(timedTestDelay * 3 / 4)
+
+								handler(NewMockKeyWithID(23), cache.Value{
+									Data:           "data",
+									ExpirationTime: clock().Add(-time.Second),
+								})
+							}
+
+							return true
+						}).
+						Once()
+					storage.On("Delete", NewMockKeyWithID(23)).Once()
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				ctx: func() context.Context {
+					ctx, cancel := context.WithCancel(context.Background())
+					go func() {
+						time.Sleep(timedTestDelay)
+						cancel()
+					}()
+
+					return ctx
+				}(),
+			},
+		},
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			gc := TotalGC{data.fields.storage, data.fields.clock}
+			gc.Clean(data.args.ctx)
+
+			mock.AssertExpectationsForObjects(test, data.fields.storage)
+		})
+	}
 }
 
 func TestTotalGC_handleIteration(test *testing.T) {

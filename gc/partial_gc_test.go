@@ -133,7 +133,7 @@ func TestPartialGC_Clean(test *testing.T) {
 			},
 		},
 		{
-			name: "with a canceled context",
+			name: "with canceled tries",
 			fields: fields{
 				storage: new(MockStorage),
 				clock:   clock,
@@ -142,6 +142,46 @@ func TestPartialGC_Clean(test *testing.T) {
 				ctx: func() context.Context {
 					ctx, cancel := context.WithCancel(context.Background())
 					cancel()
+
+					return ctx
+				}(),
+			},
+		},
+		{
+			name: "with canceled iterations",
+			fields: fields{
+				storage: func() Storage {
+					storage := new(MockStorage)
+					storage.
+						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
+							return handler != nil
+						})).
+						Return(func(handler hashmap.Handler) bool {
+							for i := 0; i < 15; i++ {
+								time.Sleep(timedTestDelay * 3 / 4)
+
+								handler(NewMockKeyWithID(23), cache.Value{
+									Data:           "data",
+									ExpirationTime: clock().Add(-time.Second),
+								})
+							}
+
+							return true
+						}).
+						Once()
+					storage.On("Delete", NewMockKeyWithID(23)).Once()
+
+					return storage
+				}(),
+				clock: clock,
+			},
+			args: args{
+				ctx: func() context.Context {
+					ctx, cancel := context.WithCancel(context.Background())
+					go func() {
+						time.Sleep(timedTestDelay)
+						cancel()
+					}()
 
 					return ctx
 				}(),
