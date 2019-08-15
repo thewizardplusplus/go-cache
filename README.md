@@ -73,22 +73,70 @@ func main() {
 ## Benchmarks
 
 ```
-BenchmarkCacheGetting/Get-8         	10000000	      1641 ns/op	     352 B/op	      36 allocs/op
-BenchmarkCacheGetting/GetWithGC-8   	 5000000	      3291 ns/op	     575 B/op	      57 allocs/op
+BenchmarkCacheGetting/Get/100-8                   	30000000	       454 ns/op	      41 B/op	       7 allocs/op
+BenchmarkCacheGetting/Get/10000-8                 	30000000	       638 ns/op	      42 B/op	       7 allocs/op
+BenchmarkCacheGetting/Get/1000000-8               	10000000	      1583 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting/GetWithGC/100-8             	30000000	       403 ns/op	      41 B/op	       7 allocs/op
+BenchmarkCacheGetting/GetWithGC/10000-8           	30000000	       515 ns/op	      42 B/op	       7 allocs/op
+BenchmarkCacheGetting/GetWithGC/1000000-8         	20000000	       934 ns/op	      44 B/op	       7 allocs/op
 ```
 
 With the total GC:
 
 ```
-BenchmarkCacheGetting_withTotalGC/Get-8         	 5000000	      3567 ns/op	     534 B/op	      40 allocs/op
-BenchmarkCacheGetting_withTotalGC/GetWithGC-8   	 2000000	      9114 ns/op	    1026 B/op	      69 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/100/0.01-8                     	20000000	       832 ns/op	      94 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/100/0.20-8                     	20000000	       801 ns/op	      89 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/100/0.30-8                     	20000000	       859 ns/op	      90 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/100/0.99-8                     	20000000	       798 ns/op	      88 B/op	      10 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/10000/0.01-8                   	10000000	      1112 ns/op	      94 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/10000/0.20-8                   	10000000	      1158 ns/op	     107 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/10000/0.30-8                   	20000000	      1016 ns/op	     103 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/10000/0.99-8                   	30000000	       466 ns/op	      54 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/1000000/0.01-8                 	10000000	      1959 ns/op	     114 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/1000000/0.20-8                 	10000000	      1685 ns/op	      92 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/1000000/0.30-8                 	10000000	      1365 ns/op	      76 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/Get/1000000/0.99-8                 	20000000	       664 ns/op	      54 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/100/0.01-8               	20000000	       793 ns/op	      95 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/100/0.20-8               	20000000	       794 ns/op	      90 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/100/0.30-8               	20000000	       833 ns/op	      91 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/100/0.99-8               	20000000	       660 ns/op	      76 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/10000/0.01-8             	20000000	       981 ns/op	      92 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/10000/0.20-8             	20000000	       947 ns/op	     104 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/10000/0.30-8             	20000000	       937 ns/op	     105 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/10000/0.99-8             	30000000	       530 ns/op	      56 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/1000000/0.01-8           	10000000	      2000 ns/op	     114 B/op	       7 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/1000000/0.20-8           	10000000	      1859 ns/op	      95 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/1000000/0.30-8           	10000000	      1428 ns/op	      80 B/op	       8 allocs/op
+BenchmarkCacheGetting_withTotalGC/GetWithGC/1000000/0.99-8           	20000000	       686 ns/op	      59 B/op	       8 allocs/op
 ```
 
 With the partial GC:
 
 ```
-BenchmarkCacheGetting_withPartialGC/Get-8         	 5000000	      3766 ns/op	     489 B/op	      34 allocs/op
-BenchmarkCacheGetting_withPartialGC/GetWithGC-8   	 2000000	      7805 ns/op	     877 B/op	      57 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/100/0.01-8                   	30000000	       449 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/100/0.20-8                   	30000000	       433 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/100/0.30-8                   	30000000	       446 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/100/0.99-8                   	20000000	       895 ns/op	     113 B/op	      11 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/10000/0.01-8                 	10000000	      1564 ns/op	     237 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/10000/0.20-8                 	10000000	      1807 ns/op	     256 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/10000/0.30-8                 	10000000	      1473 ns/op	     239 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/10000/0.99-8                 	20000000	       839 ns/op	     130 B/op	       8 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/1000000/0.01-8               	 1000000	     12194 ns/op	    2462 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/1000000/0.20-8               	 1000000	     12829 ns/op	    2540 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/1000000/0.30-8               	 1000000	     12532 ns/op	    2413 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/Get/1000000/0.99-8               	 1000000	     11354 ns/op	    2164 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/100/0.01-8             	30000000	       460 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/100/0.20-8             	30000000	       446 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/100/0.30-8             	30000000	       473 ns/op	      46 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/100/0.99-8             	20000000	       978 ns/op	     120 B/op	      11 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/10000/0.01-8           	10000000	      1594 ns/op	     243 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/10000/0.20-8           	10000000	      1554 ns/op	     244 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/10000/0.30-8           	10000000	      1548 ns/op	     240 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/10000/0.99-8           	20000000	       886 ns/op	     134 B/op	       8 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/1000000/0.01-8         	 1000000	     15485 ns/op	    3050 B/op	       7 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/1000000/0.20-8         	  300000	     37861 ns/op	    7055 B/op	       9 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/1000000/0.30-8         	  300000	     49486 ns/op	    8154 B/op	       9 allocs/op
+BenchmarkCacheGetting_withPartialGC/GetWithGC/1000000/0.99-8         	  200000	     55579 ns/op	    8959 B/op	      13 allocs/op
 ```
 
 ## License
