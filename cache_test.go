@@ -31,7 +31,38 @@ func TestNewCache(test *testing.T) {
 		wantStorage   hashmap.Storage
 		wantClockTime time.Time
 	}{
-		// TODO: Add test cases.
+		{
+			name: "with default options",
+			args: args{
+				options: nil,
+			},
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: time.Now(),
+		},
+		{
+			name: "with the set storage",
+			args: args{
+				options: []Option{WithStorage(new(MockStorage))},
+			},
+			wantStorage:   new(MockStorage),
+			wantClockTime: time.Now(),
+		},
+		{
+			name: "with the set clock",
+			args: args{
+				options: []Option{WithClock(clock)},
+			},
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: clock(),
+		},
+		{
+			name: "with set options",
+			args: args{
+				options: []Option{WithStorage(new(MockStorage)), WithClock(clock)},
+			},
+			wantStorage:   new(MockStorage),
+			wantClockTime: clock(),
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			got := NewCache(data.args.options...)
