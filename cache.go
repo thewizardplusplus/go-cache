@@ -7,6 +7,12 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+// ...
+var (
+	ErrKeyMissed  = errors.New("key missed")
+	ErrKeyExpired = errors.New("key expired")
+)
+
 // Clock ...
 type Clock func() time.Time
 
@@ -15,12 +21,6 @@ type Cache struct {
 	storage hashmap.Storage
 	clock   Clock
 }
-
-// ...
-var (
-	ErrKeyMissed  = errors.New("key missed")
-	ErrKeyExpired = errors.New("key expired")
-)
 
 // NewCache ...
 func NewCache(options ...Option) Cache {

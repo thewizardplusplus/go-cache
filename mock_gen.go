@@ -9,6 +9,7 @@ import (
 // Key ...
 //
 // It's used only for mock generating.
+//
 type Key interface {
 	hashmap.Key
 }
@@ -18,6 +19,7 @@ type Key interface {
 // Storage ...
 //
 // It's used only for mock generating.
+//
 type Storage interface {
 	hashmap.Storage
 }
