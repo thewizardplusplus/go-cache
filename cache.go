@@ -10,17 +10,6 @@ import (
 // Clock ...
 type Clock func() time.Time
 
-// Value ...
-type Value struct {
-	Data           interface{}
-	ExpirationTime time.Time
-}
-
-// IsExpired ...
-func (value Value) IsExpired(clock Clock) bool {
-	return !value.ExpirationTime.IsZero() && clock().After(value.ExpirationTime)
-}
-
 // Cache ...
 type Cache struct {
 	storage hashmap.Storage
