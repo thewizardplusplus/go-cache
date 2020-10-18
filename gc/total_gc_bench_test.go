@@ -22,7 +22,7 @@ func (key IntKey) Hash() int {
 	return int(hash.Sum32())
 }
 
-func (key IntKey) Equals(other interface{}) bool {
+func (key IntKey) Equals(other hashmap.Key) bool {
 	return key == other.(IntKey)
 }
 
