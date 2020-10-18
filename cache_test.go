@@ -1,12 +1,12 @@
 package cache
 
 import (
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -21,12 +21,36 @@ func NewMockKeyWithID(id int) *MockKeyWithID {
 }
 
 func TestNewCache(test *testing.T) {
-	storage := new(MockStorage)
-	cache := NewCache(WithStorage(storage))
+	type args struct {
+		options []Option
+	}
 
-	mock.AssertExpectationsForObjects(test, storage)
-	assert.Equal(test, storage, cache.storage)
-	assert.Equal(test, getPointer(time.Now), getPointer(cache.clock))
+	for _, data := range []struct {
+		name          string
+		args          args
+		wantStorage   hashmap.Storage
+		wantClockTime time.Time
+	}{
+		// TODO: Add test cases.
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := NewCache(data.args.options...)
+
+			_, ok := got.storage.(interface {
+				AssertExpectations(assert.TestingT) bool // nolint: staticcheck
+			})
+			if ok {
+				mock.AssertExpectationsForObjects(test, got.storage)
+			}
+			assert.Equal(test, data.wantStorage, got.storage)
+
+			// don't use the reflect.Value.Pointer() method for this check; see details:
+			// * https://golang.org/pkg/reflect/#Value.Pointer
+			// * https://stackoverflow.com/a/9644797
+			require.NotNil(test, got.clock)
+			assert.WithinDuration(test, data.wantClockTime, got.clock(), time.Hour)
+		})
+	}
 }
 
 func TestCache_Get(test *testing.T) {
@@ -267,10 +291,6 @@ func TestCache_Delete(test *testing.T) {
 	cache.Delete(key)
 
 	mock.AssertExpectationsForObjects(test, storage, key)
-}
-
-func getPointer(value interface{}) uintptr {
-	return reflect.ValueOf(value).Pointer()
 }
 
 func clock() time.Time {
