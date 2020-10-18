@@ -35,7 +35,7 @@ func Example() {
 	cleaner := gc.NewPartialGC(storage, time.Now)
 	go gc.Run(context.Background(), cleaner, gcPeriod)
 
-	timeZones := cache.NewCache(storage, time.Now)
+	timeZones := cache.NewCache(cache.WithStorage(storage))
 	timeZones.Set(StringKey("EST"), -5*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("CST"), -6*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("MST"), -7*60*60, exampleDelay/2)

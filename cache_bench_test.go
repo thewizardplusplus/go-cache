@@ -57,8 +57,7 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 		for _, storageSize := range []int{1e2, 1e4, 1e6} {
 			name := fmt.Sprintf("%s/%d", data.name, storageSize)
 			benchmark.Run(name, func(benchmark *testing.B) {
-				storage := hashmap.NewConcurrentHashMap()
-				cache := NewCache(storage, time.Now)
+				cache := NewCache()
 				data.prepare(cache, storageSize)
 
 				// add concurrent load

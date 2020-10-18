@@ -22,7 +22,7 @@ func NewMockKeyWithID(id int) *MockKeyWithID {
 
 func TestNewCache(test *testing.T) {
 	storage := new(MockStorage)
-	cache := NewCache(storage, time.Now)
+	cache := NewCache(WithStorage(storage))
 
 	mock.AssertExpectationsForObjects(test, storage)
 	assert.Equal(test, storage, cache.storage)

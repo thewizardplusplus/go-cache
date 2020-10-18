@@ -45,7 +45,7 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 				name := fmt.Sprintf("%s/%d/%.2f", data.name, storageSize, expiredPercent)
 				benchmark.Run(name, func(benchmark *testing.B) {
 					storage := hashmap.NewConcurrentHashMap()
-					cache := cache.NewCache(storage, time.Now)
+					cache := cache.NewCache(cache.WithStorage(storage))
 					data.prepare(cache, storageSize, expiredPercent)
 
 					ctx, cancel := context.WithCancel(context.Background())

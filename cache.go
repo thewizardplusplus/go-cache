@@ -23,8 +23,17 @@ var (
 )
 
 // NewCache ...
-func NewCache(storage hashmap.Storage, clock Clock) Cache {
-	return Cache{storage, clock}
+func NewCache(options ...Option) Cache {
+	// default options
+	cache := Cache{
+		storage: hashmap.NewConcurrentHashMap(),
+		clock:   time.Now,
+	}
+	for _, option := range options {
+		option(&cache)
+	}
+
+	return cache
 }
 
 // Get ...
