@@ -7,22 +7,14 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
-//go:generate mockery -name=Storage -inpkg -case=underscore -testonly
-
-// Storage ...
-type Storage interface {
-	Iterate(handler hashmap.Handler) bool
-	Delete(key hashmap.Key)
-}
-
 // TotalGC ...
 type TotalGC struct {
-	storage Storage
+	storage hashmap.Storage
 	clock   cache.Clock
 }
 
 // NewTotalGC ...
-func NewTotalGC(storage Storage, clock cache.Clock) TotalGC {
+func NewTotalGC(storage hashmap.Storage, clock cache.Clock) TotalGC {
 	return TotalGC{storage, clock}
 }
 

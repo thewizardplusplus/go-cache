@@ -21,3 +21,12 @@ type Key interface {
 type Handler interface {
 	Handle(key hashmap.Key, value interface{}) bool
 }
+
+//go:generate mockery -name=Storage -inpkg -case=underscore -testonly
+
+// Storage ...
+//
+// It's used only for mock generating.
+type Storage interface {
+	hashmap.Storage
+}

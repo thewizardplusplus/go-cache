@@ -8,11 +8,11 @@ import (
 type iterator struct {
 	counter
 
-	storage Storage
+	storage hashmap.Storage
 	clock   cache.Clock
 }
 
-func newIterator(storage Storage, clock cache.Clock) *iterator {
+func newIterator(storage hashmap.Storage, clock cache.Clock) *iterator {
 	return &iterator{storage: storage, clock: clock}
 }
 

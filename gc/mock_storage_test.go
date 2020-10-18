@@ -15,6 +15,29 @@ func (_m *MockStorage) Delete(key hashmap.Key) {
 	_m.Called(key)
 }
 
+// Get provides a mock function with given fields: key
+func (_m *MockStorage) Get(key hashmap.Key) (interface{}, bool) {
+	ret := _m.Called(key)
+
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(hashmap.Key) interface{}); ok {
+		r0 = rf(key)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
+	}
+
+	var r1 bool
+	if rf, ok := ret.Get(1).(func(hashmap.Key) bool); ok {
+		r1 = rf(key)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}
+
 // Iterate provides a mock function with given fields: handler
 func (_m *MockStorage) Iterate(handler hashmap.Handler) bool {
 	ret := _m.Called(handler)
@@ -27,4 +50,9 @@ func (_m *MockStorage) Iterate(handler hashmap.Handler) bool {
 	}
 
 	return r0
+}
+
+// Set provides a mock function with given fields: key, value
+func (_m *MockStorage) Set(key hashmap.Key, value interface{}) {
+	_m.Called(key, value)
 }

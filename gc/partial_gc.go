@@ -4,16 +4,17 @@ import (
 	"context"
 
 	cache "github.com/thewizardplusplus/go-cache"
+	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 // PartialGC ...
 type PartialGC struct {
-	storage Storage
+	storage hashmap.Storage
 	clock   cache.Clock
 }
 
 // NewPartialGC ...
-func NewPartialGC(storage Storage, clock cache.Clock) PartialGC {
+func NewPartialGC(storage hashmap.Storage, clock cache.Clock) PartialGC {
 	return PartialGC{storage, clock}
 }
 
