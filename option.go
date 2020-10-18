@@ -17,3 +17,13 @@ func WithStorage(storage hashmap.Storage) Option {
 		cache.storage = storage
 	}
 }
+
+// WithClock ...
+//
+// Default: the time.Now() function.
+//
+func WithClock(clock Clock) Option {
+	return func(cache *Cache) {
+		cache.clock = clock
+	}
+}
