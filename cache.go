@@ -21,18 +21,9 @@ func (value Value) IsExpired(clock Clock) bool {
 	return !value.ExpirationTime.IsZero() && clock().After(value.ExpirationTime)
 }
 
-//go:generate mockery -name=Storage -inpkg -case=underscore -testonly
-
-// Storage ...
-type Storage interface {
-	Get(key hashmap.Key) (data interface{}, ok bool)
-	Set(key hashmap.Key, data interface{})
-	Delete(key hashmap.Key)
-}
-
 // Cache ...
 type Cache struct {
-	storage Storage
+	storage hashmap.Storage
 	clock   Clock
 }
 
@@ -43,7 +34,7 @@ var (
 )
 
 // NewCache ...
-func NewCache(storage Storage, clock Clock) Cache {
+func NewCache(storage hashmap.Storage, clock Clock) Cache {
 	return Cache{storage, clock}
 }
 
