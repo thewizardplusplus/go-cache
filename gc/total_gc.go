@@ -2,6 +2,7 @@ package gc
 
 import (
 	"context"
+	"time"
 
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
@@ -14,8 +15,16 @@ type TotalGC struct {
 }
 
 // NewTotalGC ...
-func NewTotalGC(storage hashmap.Storage, clock cache.Clock) TotalGC {
-	return TotalGC{storage, clock}
+func NewTotalGC(storage hashmap.Storage, options ...TotalGCOption) TotalGC {
+	gc := TotalGC{
+		storage: storage,
+		clock:   time.Now, // default value
+	}
+	for _, option := range options {
+		option(&gc)
+	}
+
+	return gc
 }
 
 // Clean ...

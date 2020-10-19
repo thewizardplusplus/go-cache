@@ -70,7 +70,7 @@ func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 					ctx, cancel := context.WithCancel(context.Background())
 					defer cancel()
 
-					gc := NewTotalGC(storage, time.Now)
+					gc := NewTotalGC(storage)
 					go Run(ctx, gc, periodForBench)
 
 					// add concurrent load

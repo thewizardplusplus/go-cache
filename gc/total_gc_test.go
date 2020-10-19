@@ -28,7 +28,7 @@ const (
 
 func TestNewTotalGC(test *testing.T) {
 	storage := new(MockStorage)
-	gc := NewTotalGC(storage, time.Now)
+	gc := NewTotalGC(storage)
 
 	mock.AssertExpectationsForObjects(test, storage)
 	assert.Equal(test, storage, gc.storage)
