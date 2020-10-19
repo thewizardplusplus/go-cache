@@ -12,6 +12,10 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+const (
+	timedTestDelay = 100 * time.Millisecond
+)
+
 type MockKeyWithID struct {
 	MockKey
 
@@ -21,10 +25,6 @@ type MockKeyWithID struct {
 func NewMockKeyWithID(id int) *MockKeyWithID {
 	return &MockKeyWithID{ID: id}
 }
-
-const (
-	timedTestDelay = 100 * time.Millisecond
-)
 
 func TestNewTotalGC(test *testing.T) {
 	type args struct {

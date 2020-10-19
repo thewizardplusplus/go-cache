@@ -13,6 +13,10 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
+const (
+	periodForBench = time.Nanosecond
+)
+
 type IntKey int
 
 func (key IntKey) Hash() int {
@@ -25,10 +29,6 @@ func (key IntKey) Hash() int {
 func (key IntKey) Equals(other hashmap.Key) bool {
 	return key == other.(IntKey)
 }
-
-const (
-	periodForBench = time.Nanosecond
-)
 
 func BenchmarkCacheGetting_withTotalGC(benchmark *testing.B) {
 	for _, data := range []struct {
