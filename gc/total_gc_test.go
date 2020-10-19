@@ -38,7 +38,24 @@ func TestNewTotalGC(test *testing.T) {
 		wantStorage   hashmap.Storage
 		wantClockTime time.Time
 	}{
-		// TODO: Add test cases.
+		{
+			name: "with default options",
+			args: args{
+				storage: new(MockStorage),
+				options: nil,
+			},
+			wantStorage:   new(MockStorage),
+			wantClockTime: time.Now(),
+		},
+		{
+			name: "with the set clock",
+			args: args{
+				storage: new(MockStorage),
+				options: []TotalGCOption{TotalGCWithClock(clock)},
+			},
+			wantStorage:   new(MockStorage),
+			wantClockTime: clock(),
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			got := NewTotalGC(data.args.storage, data.args.options...)
