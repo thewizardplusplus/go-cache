@@ -2,6 +2,7 @@ package gc
 
 import (
 	"context"
+	"reflect"
 	"testing"
 	"time"
 
@@ -202,4 +203,8 @@ func TestPartialGC_Clean(test *testing.T) {
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
 		})
 	}
+}
+
+func getPointer(value interface{}) uintptr {
+	return reflect.ValueOf(value).Pointer()
 }
