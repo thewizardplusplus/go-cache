@@ -26,3 +26,13 @@ func PartialGCWithMaxIteratedCount(maxIteratedCount int) PartialGCOption {
 		gc.maxIteratedCount = maxIteratedCount
 	}
 }
+
+// PartialGCWithMinExpiredPercent ...
+//
+// Default: 0.25.
+//
+func PartialGCWithMinExpiredPercent(minExpiredPercent float64) PartialGCOption {
+	return func(gc *PartialGC) {
+		gc.minExpiredPercent = minExpiredPercent
+	}
+}
