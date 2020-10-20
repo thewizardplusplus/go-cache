@@ -2,23 +2,47 @@ package gc
 
 import (
 	"context"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 func TestNewPartialGC(test *testing.T) {
-	storage := new(MockStorage)
-	gc := NewPartialGC(storage)
+	type args struct {
+		storage hashmap.Storage
+		options []PartialGCOption
+	}
 
-	mock.AssertExpectationsForObjects(test, storage)
-	assert.Equal(test, storage, gc.storage)
-	assert.Equal(test, getPointer(time.Now), getPointer(gc.clock))
+	for _, data := range []struct {
+		name                  string
+		args                  args
+		wantStorage           hashmap.Storage
+		wantClockTime         time.Time
+		wantMaxIteratedCount  int
+		wantMinExpiredPercent float64
+	}{
+		// TODO: Add test cases.
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			got := NewPartialGC(data.args.storage, data.args.options...)
+
+			mock.AssertExpectationsForObjects(test, got.storage)
+			assert.Equal(test, data.wantStorage, got.storage)
+			assert.Equal(test, data.wantMaxIteratedCount, got.maxIteratedCount)
+			assert.Equal(test, data.wantMinExpiredPercent, got.minExpiredPercent)
+
+			// don't use the reflect.Value.Pointer() method for this check; see details:
+			// * https://golang.org/pkg/reflect/#Value.Pointer
+			// * https://stackoverflow.com/a/9644797
+			require.NotNil(test, got.clock)
+			assert.WithinDuration(test, data.wantClockTime, got.clock(), time.Hour)
+		})
+	}
 }
 
 // nolint: gocyclo
@@ -220,8 +244,4 @@ func TestPartialGC_Clean(test *testing.T) {
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
 		})
 	}
-}
-
-func getPointer(value interface{}) uintptr {
-	return reflect.ValueOf(value).Pointer()
 }
