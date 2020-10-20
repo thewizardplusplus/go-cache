@@ -63,6 +63,18 @@ func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
 	return data, nil
 }
 
+// Iterate ...
+func (cache Cache) Iterate(handler hashmap.Handler) bool {
+	return cache.storage.Iterate(func(key hashmap.Key, data interface{}) bool {
+		value := data.(models.Value)
+		if value.IsExpired(cache.clock) {
+			return true
+		}
+
+		return handler(key, value.Data)
+	})
+}
+
 // Set ...
 func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 	var expirationTime time.Time
