@@ -13,6 +13,13 @@ const (
 	minExpiredPercent = 0.25
 )
 
+func newCounter(maxIteratedCount int, minExpiredPercent float64) counter {
+	return counter{
+		maxIteratedCount:  maxIteratedCount,
+		minExpiredPercent: minExpiredPercent,
+	}
+}
+
 func (counter counter) stopIterate() bool {
 	return counter.iterated >= counter.maxIteratedCount
 }
