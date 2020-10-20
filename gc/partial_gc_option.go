@@ -4,6 +4,11 @@ import (
 	cache "github.com/thewizardplusplus/go-cache"
 )
 
+const (
+	defaultMaxIteratedCount  = 20
+	defaultMinExpiredPercent = 0.25
+)
+
 // PartialGCOption ...
 type PartialGCOption func(gc *PartialGC)
 

@@ -18,7 +18,9 @@ type TotalGC struct {
 func NewTotalGC(storage hashmap.Storage, options ...TotalGCOption) TotalGC {
 	gc := TotalGC{
 		storage: storage,
-		clock:   time.Now, // default value
+
+		// default options
+		clock: time.Now,
 	}
 	for _, option := range options {
 		option(&gc)

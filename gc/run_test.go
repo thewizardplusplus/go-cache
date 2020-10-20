@@ -14,12 +14,14 @@ func TestRun(test *testing.T) {
 	waiter.Add(1)
 
 	ctx, cancel := context.WithCancel(context.Background())
+
 	gc := new(MockGC)
 	gc.On("Clean", ctx)
 
 	const period = 100 * time.Millisecond
 	go func() {
 		defer waiter.Done()
+
 		Run(ctx, gc, period)
 	}()
 

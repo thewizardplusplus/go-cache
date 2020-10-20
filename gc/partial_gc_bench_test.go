@@ -44,15 +44,15 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 			for _, expiredPercent := range []float32{0.01, 0.2, 0.3, 0.99} {
 				name := fmt.Sprintf("%s/%d/%.2f", data.name, storageSize, expiredPercent)
 				benchmark.Run(name, func(benchmark *testing.B) {
-					storage := hashmap.NewConcurrentHashMap()
-					cache := cache.NewCache(cache.WithStorage(storage))
-					data.prepare(cache, storageSize, expiredPercent)
-
 					ctx, cancel := context.WithCancel(context.Background())
 					defer cancel()
 
+					storage := hashmap.NewConcurrentHashMap()
 					gc := NewPartialGC(storage)
 					go Run(ctx, gc, periodForBench)
+
+					cache := cache.NewCache(cache.WithStorage(storage))
+					data.prepare(cache, storageSize, expiredPercent)
 
 					// add concurrent load
 					go func() {

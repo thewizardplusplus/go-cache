@@ -8,11 +8,6 @@ type counter struct {
 	expiredCount  int
 }
 
-const (
-	maxIteratedCount  = 20
-	minExpiredPercent = 0.25
-)
-
 func newCounter(maxIteratedCount int, minExpiredPercent float64) counter {
 	return counter{
 		maxIteratedCount:  maxIteratedCount,

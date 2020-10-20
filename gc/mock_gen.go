@@ -9,6 +9,7 @@ import (
 // Key ...
 //
 // It's used only for mock generating.
+//
 type Key interface {
 	hashmap.Key
 }
@@ -18,6 +19,7 @@ type Key interface {
 // Handler ...
 //
 // It's used only for mock generating.
+//
 type Handler interface {
 	Handle(key hashmap.Key, value interface{}) bool
 }
@@ -27,6 +29,7 @@ type Handler interface {
 // Storage ...
 //
 // It's used only for mock generating.
+//
 type Storage interface {
 	hashmap.Storage
 }

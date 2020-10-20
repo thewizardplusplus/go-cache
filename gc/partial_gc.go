@@ -22,10 +22,12 @@ func NewPartialGC(
 	options ...PartialGCOption,
 ) PartialGC {
 	gc := PartialGC{
-		storage:           storage,
-		clock:             time.Now,          // default value
-		maxIteratedCount:  maxIteratedCount,  // default value
-		minExpiredPercent: minExpiredPercent, // default value
+		storage: storage,
+
+		// default options
+		clock:             time.Now,
+		maxIteratedCount:  defaultMaxIteratedCount,
+		minExpiredPercent: defaultMinExpiredPercent,
 	}
 	for _, option := range options {
 		option(&gc)
@@ -36,8 +38,9 @@ func NewPartialGC(
 
 // Clean ...
 //
-// Its algorithm is based on expiration in Redis.
-// See for details: https://redis.io/commands/expire#how-redis-expires-keys
+// Its algorithm is based on expiration in Redis. See for details:
+// https://redis.io/commands/expire#how-redis-expires-keys
+//
 func (gc PartialGC) Clean(ctx context.Context) {
 	for {
 		select {

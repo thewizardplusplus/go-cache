@@ -34,8 +34,8 @@ func TestNewPartialGC(test *testing.T) {
 			},
 			wantStorage:           new(MockStorage),
 			wantClockTime:         time.Now(),
-			wantMaxIteratedCount:  maxIteratedCount,
-			wantMinExpiredPercent: minExpiredPercent,
+			wantMaxIteratedCount:  defaultMaxIteratedCount,
+			wantMinExpiredPercent: defaultMinExpiredPercent,
 		},
 		{
 			name: "with the set clock",
@@ -45,8 +45,8 @@ func TestNewPartialGC(test *testing.T) {
 			},
 			wantStorage:           new(MockStorage),
 			wantClockTime:         clock(),
-			wantMaxIteratedCount:  maxIteratedCount,
-			wantMinExpiredPercent: minExpiredPercent,
+			wantMaxIteratedCount:  defaultMaxIteratedCount,
+			wantMinExpiredPercent: defaultMinExpiredPercent,
 		},
 		{
 			name: "with the set maximal iterated count",
@@ -57,7 +57,7 @@ func TestNewPartialGC(test *testing.T) {
 			wantStorage:           new(MockStorage),
 			wantClockTime:         time.Now(),
 			wantMaxIteratedCount:  23,
-			wantMinExpiredPercent: minExpiredPercent,
+			wantMinExpiredPercent: defaultMinExpiredPercent,
 		},
 		{
 			name: "with the set minimal expired percent",
@@ -67,7 +67,7 @@ func TestNewPartialGC(test *testing.T) {
 			},
 			wantStorage:           new(MockStorage),
 			wantClockTime:         time.Now(),
-			wantMaxIteratedCount:  maxIteratedCount,
+			wantMaxIteratedCount:  defaultMaxIteratedCount,
 			wantMinExpiredPercent: 23,
 		},
 		{
@@ -103,7 +103,6 @@ func TestNewPartialGC(test *testing.T) {
 	}
 }
 
-// nolint: gocyclo
 func TestPartialGC_Clean(test *testing.T) {
 	type fields struct {
 		storage           Storage
