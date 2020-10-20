@@ -32,7 +32,7 @@ func Test_iterator_handleIteration(test *testing.T) {
 	type fields struct {
 		counter counter
 
-		storage Storage
+		storage hashmap.Storage
 		clock   cache.Clock
 	}
 	type args struct {
@@ -114,7 +114,7 @@ func Test_iterator_handleIteration(test *testing.T) {
 					expiredCount:  3,
 				},
 
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.On("Delete", NewMockKeyWithID(23))
 

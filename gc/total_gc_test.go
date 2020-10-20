@@ -74,7 +74,7 @@ func TestNewTotalGC(test *testing.T) {
 
 func TestTotalGC_Clean(test *testing.T) {
 	type fields struct {
-		storage Storage
+		storage hashmap.Storage
 		clock   cache.Clock
 	}
 	type args struct {
@@ -89,7 +89,7 @@ func TestTotalGC_Clean(test *testing.T) {
 		{
 			name: "without iterations",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
@@ -109,7 +109,7 @@ func TestTotalGC_Clean(test *testing.T) {
 		{
 			name: "with iterations",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
@@ -148,7 +148,7 @@ func TestTotalGC_Clean(test *testing.T) {
 		{
 			name: "with canceled iterations",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
@@ -199,7 +199,7 @@ func TestTotalGC_Clean(test *testing.T) {
 
 func TestTotalGC_handleIteration(test *testing.T) {
 	type fields struct {
-		storage Storage
+		storage hashmap.Storage
 		clock   cache.Clock
 	}
 	type args struct {
@@ -228,7 +228,7 @@ func TestTotalGC_handleIteration(test *testing.T) {
 		{
 			name: "with an expired value",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.On("Delete", NewMockKeyWithID(23))
 

@@ -86,7 +86,7 @@ func TestNewCache(test *testing.T) {
 
 func TestCache_Get(test *testing.T) {
 	type fields struct {
-		storage Storage
+		storage hashmap.Storage
 		clock   Clock
 	}
 	type args struct {
@@ -103,7 +103,7 @@ func TestCache_Get(test *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
@@ -122,7 +122,7 @@ func TestCache_Get(test *testing.T) {
 		{
 			name: "error with a missed key",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.On("Get", NewMockKeyWithID(23)).Return(nil, false)
 
@@ -139,7 +139,7 @@ func TestCache_Get(test *testing.T) {
 		{
 			name: "error with an expired key",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
@@ -169,7 +169,7 @@ func TestCache_Get(test *testing.T) {
 
 func TestCache_GetWithGC(test *testing.T) {
 	type fields struct {
-		storage Storage
+		storage hashmap.Storage
 		clock   Clock
 	}
 	type args struct {
@@ -186,7 +186,7 @@ func TestCache_GetWithGC(test *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
@@ -205,7 +205,7 @@ func TestCache_GetWithGC(test *testing.T) {
 		{
 			name: "error with a missed key",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.On("Get", NewMockKeyWithID(23)).Return(nil, false)
 
@@ -222,7 +222,7 @@ func TestCache_GetWithGC(test *testing.T) {
 		{
 			name: "error with an expired key",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
@@ -253,7 +253,7 @@ func TestCache_GetWithGC(test *testing.T) {
 
 func TestCache_Set(test *testing.T) {
 	type fields struct {
-		storage Storage
+		storage hashmap.Storage
 		clock   Clock
 	}
 	type args struct {
@@ -270,7 +270,7 @@ func TestCache_Set(test *testing.T) {
 		{
 			name: "without a TTL",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.On("Set", NewMockKeyWithID(23), Value{"data", time.Time{}})
 
@@ -287,7 +287,7 @@ func TestCache_Set(test *testing.T) {
 		{
 			name: "with a TTL",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Set", NewMockKeyWithID(23), Value{"data", clock().Add(time.Second)})

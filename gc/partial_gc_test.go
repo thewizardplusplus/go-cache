@@ -105,7 +105,7 @@ func TestNewPartialGC(test *testing.T) {
 
 func TestPartialGC_Clean(test *testing.T) {
 	type fields struct {
-		storage           Storage
+		storage           hashmap.Storage
 		clock             cache.Clock
 		maxIteratedCount  int
 		minExpiredPercent float64
@@ -122,7 +122,7 @@ func TestPartialGC_Clean(test *testing.T) {
 		{
 			name: "without iterations",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
@@ -144,7 +144,7 @@ func TestPartialGC_Clean(test *testing.T) {
 		{
 			name: "with a one try",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
@@ -185,7 +185,7 @@ func TestPartialGC_Clean(test *testing.T) {
 		{
 			name: "with few tries",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					var try int
 
 					storage := new(MockStorage)
@@ -247,7 +247,7 @@ func TestPartialGC_Clean(test *testing.T) {
 		{
 			name: "with canceled iterations",
 			fields: fields{
-				storage: func() Storage {
+				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
 						On("Iterate", mock.MatchedBy(func(handler hashmap.Handler) bool {
