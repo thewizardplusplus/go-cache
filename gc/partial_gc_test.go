@@ -26,7 +26,65 @@ func TestNewPartialGC(test *testing.T) {
 		wantMaxIteratedCount  int
 		wantMinExpiredPercent float64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "with default options",
+			args: args{
+				storage: new(MockStorage),
+				options: nil,
+			},
+			wantStorage:           new(MockStorage),
+			wantClockTime:         time.Now(),
+			wantMaxIteratedCount:  maxIteratedCount,
+			wantMinExpiredPercent: minExpiredPercent,
+		},
+		{
+			name: "with the set clock",
+			args: args{
+				storage: new(MockStorage),
+				options: []PartialGCOption{PartialGCWithClock(clock)},
+			},
+			wantStorage:           new(MockStorage),
+			wantClockTime:         clock(),
+			wantMaxIteratedCount:  maxIteratedCount,
+			wantMinExpiredPercent: minExpiredPercent,
+		},
+		{
+			name: "with the set maximal iterated count",
+			args: args{
+				storage: new(MockStorage),
+				options: []PartialGCOption{PartialGCWithMaxIteratedCount(23)},
+			},
+			wantStorage:           new(MockStorage),
+			wantClockTime:         time.Now(),
+			wantMaxIteratedCount:  23,
+			wantMinExpiredPercent: minExpiredPercent,
+		},
+		{
+			name: "with the set minimal expired percent",
+			args: args{
+				storage: new(MockStorage),
+				options: []PartialGCOption{PartialGCWithMinExpiredPercent(23)},
+			},
+			wantStorage:           new(MockStorage),
+			wantClockTime:         time.Now(),
+			wantMaxIteratedCount:  maxIteratedCount,
+			wantMinExpiredPercent: 23,
+		},
+		{
+			name: "with set options",
+			args: args{
+				storage: new(MockStorage),
+				options: []PartialGCOption{
+					PartialGCWithClock(clock),
+					PartialGCWithMaxIteratedCount(23),
+					PartialGCWithMinExpiredPercent(42),
+				},
+			},
+			wantStorage:           new(MockStorage),
+			wantClockTime:         clock(),
+			wantMaxIteratedCount:  23,
+			wantMinExpiredPercent: 42,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			got := NewPartialGC(data.args.storage, data.args.options...)
