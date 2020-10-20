@@ -32,12 +32,12 @@ type StringKey string
 
 func (key StringKey) Hash() int {
 	hash := fnv.New32()
-	io.WriteString(hash, string(key))
+	io.WriteString(hash, string(key)) // nolint: errcheck
 
 	return int(hash.Sum32())
 }
 
-func (key StringKey) Equals(other interface{}) bool {
+func (key StringKey) Equals(other hashmap.Key) bool {
 	return key == other.(StringKey)
 }
 
@@ -48,10 +48,10 @@ const (
 
 func main() {
 	storage := hashmap.NewConcurrentHashMap()
-	cleaner := gc.NewPartialGC(storage, time.Now)
+	cleaner := gc.NewPartialGC(storage)
 	go gc.Run(context.Background(), cleaner, gcPeriod)
 
-	timeZones := cache.NewCache(storage, time.Now)
+	timeZones := cache.NewCache(cache.WithStorage(storage))
 	timeZones.Set(StringKey("EST"), -5*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("CST"), -6*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("MST"), -7*60*60, exampleDelay/2)
