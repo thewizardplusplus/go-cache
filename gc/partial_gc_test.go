@@ -24,8 +24,10 @@ func TestNewPartialGC(test *testing.T) {
 // nolint: gocyclo
 func TestPartialGC_Clean(test *testing.T) {
 	type fields struct {
-		storage Storage
-		clock   cache.Clock
+		storage           Storage
+		clock             cache.Clock
+		maxIteratedCount  int
+		minExpiredPercent float64
 	}
 	type args struct {
 		ctx context.Context
@@ -50,7 +52,9 @@ func TestPartialGC_Clean(test *testing.T) {
 
 					return storage
 				}(),
-				clock: clock,
+				clock:             clock,
+				maxIteratedCount:  20,
+				minExpiredPercent: 0.25,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -89,7 +93,9 @@ func TestPartialGC_Clean(test *testing.T) {
 
 					return storage
 				}(),
-				clock: clock,
+				clock:             clock,
+				maxIteratedCount:  20,
+				minExpiredPercent: 0.25,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -132,7 +138,9 @@ func TestPartialGC_Clean(test *testing.T) {
 
 					return storage
 				}(),
-				clock: clock,
+				clock:             clock,
+				maxIteratedCount:  20,
+				minExpiredPercent: 0.25,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -141,8 +149,10 @@ func TestPartialGC_Clean(test *testing.T) {
 		{
 			name: "with canceled tries",
 			fields: fields{
-				storage: new(MockStorage),
-				clock:   clock,
+				storage:           new(MockStorage),
+				clock:             clock,
+				maxIteratedCount:  20,
+				minExpiredPercent: 0.25,
 			},
 			args: args{
 				ctx: func() context.Context {
@@ -181,7 +191,9 @@ func TestPartialGC_Clean(test *testing.T) {
 
 					return storage
 				}(),
-				clock: clock,
+				clock:             clock,
+				maxIteratedCount:  20,
+				minExpiredPercent: 0.25,
 			},
 			args: args{
 				ctx: func() context.Context {
@@ -197,7 +209,12 @@ func TestPartialGC_Clean(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			gc := PartialGC{data.fields.storage, data.fields.clock}
+			gc := PartialGC{
+				storage:           data.fields.storage,
+				clock:             data.fields.clock,
+				maxIteratedCount:  data.fields.maxIteratedCount,
+				minExpiredPercent: data.fields.minExpiredPercent,
+			}
 			gc.Clean(data.args.ctx)
 
 			mock.AssertExpectationsForObjects(test, data.fields.storage)
