@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -75,7 +76,7 @@ func TestNewTotalGC(test *testing.T) {
 func TestTotalGC_Clean(test *testing.T) {
 	type fields struct {
 		storage hashmap.Storage
-		clock   cache.Clock
+		clock   models.Clock
 	}
 	type args struct {
 		ctx context.Context
@@ -200,7 +201,7 @@ func TestTotalGC_Clean(test *testing.T) {
 func TestTotalGC_handleIteration(test *testing.T) {
 	type fields struct {
 		storage hashmap.Storage
-		clock   cache.Clock
+		clock   models.Clock
 	}
 	type args struct {
 		key   hashmap.Key

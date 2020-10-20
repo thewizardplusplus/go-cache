@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -87,7 +88,7 @@ func TestNewCache(test *testing.T) {
 func TestCache_Get(test *testing.T) {
 	type fields struct {
 		storage hashmap.Storage
-		clock   Clock
+		clock   models.Clock
 	}
 	type args struct {
 		key hashmap.Key
@@ -170,7 +171,7 @@ func TestCache_Get(test *testing.T) {
 func TestCache_GetWithGC(test *testing.T) {
 	type fields struct {
 		storage hashmap.Storage
-		clock   Clock
+		clock   models.Clock
 	}
 	type args struct {
 		key hashmap.Key
@@ -254,7 +255,7 @@ func TestCache_GetWithGC(test *testing.T) {
 func TestCache_Set(test *testing.T) {
 	type fields struct {
 		storage hashmap.Storage
-		clock   Clock
+		clock   models.Clock
 	}
 	type args struct {
 		key  hashmap.Key

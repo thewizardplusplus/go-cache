@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -13,13 +14,10 @@ var (
 	ErrKeyExpired = errors.New("key expired")
 )
 
-// Clock ...
-type Clock func() time.Time
-
 // Cache ...
 type Cache struct {
 	storage hashmap.Storage
-	clock   Clock
+	clock   models.Clock
 }
 
 // NewCache ...

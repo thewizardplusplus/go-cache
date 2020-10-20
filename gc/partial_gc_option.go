@@ -1,7 +1,7 @@
 package gc
 
 import (
-	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 )
 
 const (
@@ -16,7 +16,7 @@ type PartialGCOption func(gc *PartialGC)
 //
 // Default: the time.Now() function.
 //
-func PartialGCWithClock(clock cache.Clock) PartialGCOption {
+func PartialGCWithClock(clock models.Clock) PartialGCOption {
 	return func(gc *PartialGC) {
 		gc.clock = clock
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -33,7 +34,7 @@ func Test_iterator_handleIteration(test *testing.T) {
 		counter counter
 
 		storage hashmap.Storage
-		clock   cache.Clock
+		clock   models.Clock
 	}
 	type args struct {
 		key   hashmap.Key

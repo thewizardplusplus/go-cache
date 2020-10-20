@@ -5,13 +5,14 @@ import (
 	"time"
 
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 // TotalGC ...
 type TotalGC struct {
 	storage hashmap.Storage
-	clock   cache.Clock
+	clock   models.Clock
 }
 
 // NewTotalGC ...

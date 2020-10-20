@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -22,7 +23,7 @@ func WithStorage(storage hashmap.Storage) Option {
 //
 // Default: the time.Now() function.
 //
-func WithClock(clock Clock) Option {
+func WithClock(clock models.Clock) Option {
 	return func(cache *Cache) {
 		cache.clock = clock
 	}

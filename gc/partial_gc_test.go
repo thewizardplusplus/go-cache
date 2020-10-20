@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -106,7 +107,7 @@ func TestNewPartialGC(test *testing.T) {
 func TestPartialGC_Clean(test *testing.T) {
 	type fields struct {
 		storage           hashmap.Storage
-		clock             cache.Clock
+		clock             models.Clock
 		maxIteratedCount  int
 		minExpiredPercent float64
 	}

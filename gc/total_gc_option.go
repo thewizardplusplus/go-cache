@@ -1,7 +1,7 @@
 package gc
 
 import (
-	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 )
 
 // TotalGCOption ...
@@ -11,7 +11,7 @@ type TotalGCOption func(gc *TotalGC)
 //
 // Default: the time.Now() function.
 //
-func TotalGCWithClock(clock cache.Clock) TotalGCOption {
+func TotalGCWithClock(clock models.Clock) TotalGCOption {
 	return func(gc *TotalGC) {
 		gc.clock = clock
 	}

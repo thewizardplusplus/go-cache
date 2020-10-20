@@ -2,6 +2,7 @@ package gc
 
 import (
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -9,12 +10,12 @@ type iterator struct {
 	counter
 
 	storage hashmap.Storage
-	clock   cache.Clock
+	clock   models.Clock
 }
 
 func newIterator(
 	storage hashmap.Storage,
-	clock cache.Clock,
+	clock models.Clock,
 	maxIteratedCount int,
 	minExpiredPercent float64,
 ) *iterator {

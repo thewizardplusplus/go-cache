@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 // PartialGC ...
 type PartialGC struct {
 	storage           hashmap.Storage
-	clock             cache.Clock
+	clock             models.Clock
 	maxIteratedCount  int
 	minExpiredPercent float64
 }
