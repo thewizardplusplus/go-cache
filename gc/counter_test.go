@@ -6,6 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_newCounter(test *testing.T) {
+	counterInstance := newCounter(20, 0.25)
+
+	wantCounterInstance := counter{maxIteratedCount: 20, minExpiredPercent: 0.25}
+	assert.Equal(test, wantCounterInstance, counterInstance)
+}
+
 func Test_counter_stopIterate(test *testing.T) {
 	type fields struct {
 		maxIteratedCount int
