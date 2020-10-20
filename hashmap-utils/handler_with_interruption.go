@@ -1,4 +1,4 @@
-package gc
+package hashmaputils
 
 import (
 	"context"
@@ -6,7 +6,8 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
-func withInterruption(
+// HandlerWithInterruption ...
+func HandlerWithInterruption(
 	ctx context.Context,
 	handler hashmap.Handler,
 ) hashmap.Handler {

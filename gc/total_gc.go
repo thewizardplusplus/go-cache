@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	hashmaputils "github.com/thewizardplusplus/go-cache/hashmap-utils"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -31,7 +32,10 @@ func NewTotalGC(storage hashmap.Storage, options ...TotalGCOption) TotalGC {
 
 // Clean ...
 func (gc TotalGC) Clean(ctx context.Context) {
-	gc.storage.Iterate(withInterruption(ctx, gc.handleIteration))
+	gc.storage.Iterate(hashmaputils.HandlerWithInterruption(
+		ctx,
+		gc.handleIteration,
+	))
 }
 
 func (gc TotalGC) handleIteration(key hashmap.Key, value interface{}) bool {

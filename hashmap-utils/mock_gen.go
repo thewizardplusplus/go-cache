@@ -1,4 +1,4 @@
-package gc
+package hashmaputils
 
 import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
@@ -14,12 +14,12 @@ type Key interface {
 	hashmap.Key
 }
 
-//go:generate mockery -name=Storage -inpkg -case=underscore -testonly
+//go:generate mockery -name=Handler -inpkg -case=underscore -testonly
 
-// Storage ...
+// Handler ...
 //
 // It's used only for mock generating.
 //
-type Storage interface {
-	hashmap.Storage
+type Handler interface {
+	Handle(key hashmap.Key, value interface{}) bool
 }

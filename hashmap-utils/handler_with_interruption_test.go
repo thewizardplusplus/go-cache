@@ -1,4 +1,4 @@
-package gc
+package hashmaputils
 
 import (
 	"context"
@@ -10,7 +10,17 @@ import (
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
-func Test_withInterruption(test *testing.T) {
+type MockKeyWithID struct {
+	MockKey
+
+	ID int
+}
+
+func NewMockKeyWithID(id int) *MockKeyWithID {
+	return &MockKeyWithID{ID: id}
+}
+
+func TestHandlerWithInterruption(test *testing.T) {
 	type wrapperArgs struct {
 		ctx     context.Context
 		handler Handler
@@ -79,7 +89,7 @@ func Test_withInterruption(test *testing.T) {
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
-			handler := withInterruption(
+			handler := HandlerWithInterruption(
 				data.wrapperArgs.ctx,
 				data.wrapperArgs.handler.Handle,
 			)
