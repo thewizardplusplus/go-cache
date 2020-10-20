@@ -16,3 +16,13 @@ func PartialGCWithClock(clock cache.Clock) PartialGCOption {
 		gc.clock = clock
 	}
 }
+
+// PartialGCWithMaxIteratedCount ...
+//
+// Default: 20.
+//
+func PartialGCWithMaxIteratedCount(maxIteratedCount int) PartialGCOption {
+	return func(gc *PartialGC) {
+		gc.maxIteratedCount = maxIteratedCount
+	}
+}
