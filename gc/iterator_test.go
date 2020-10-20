@@ -6,18 +6,26 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
 func Test_newIterator(test *testing.T) {
 	storage := new(MockStorage)
-	iterator := newIterator(storage, time.Now)
+	iterator := newIterator(storage, time.Now, 20, 0.25)
+
+	wantCounter := counter{maxIteratedCount: 20, minExpiredPercent: 0.25}
+	assert.Equal(test, wantCounter, iterator.counter)
 
 	mock.AssertExpectationsForObjects(test, storage)
-	assert.Zero(test, iterator.counter)
 	assert.Equal(test, storage, iterator.storage)
-	assert.Equal(test, getPointer(time.Now), getPointer(iterator.clock))
+
+	// don't use the reflect.Value.Pointer() method for this check; see details:
+	// * https://golang.org/pkg/reflect/#Value.Pointer
+	// * https://stackoverflow.com/a/9644797
+	require.NotNil(test, iterator.clock)
+	assert.WithinDuration(test, time.Now(), iterator.clock(), time.Hour)
 }
 
 func Test_iterator_handleIteration(test *testing.T) {
