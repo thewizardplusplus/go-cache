@@ -55,8 +55,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 					maxIteratedCount:  20,
 					minExpiredPercent: 0.25,
 
-					iterated: 15,
-					expired:  3,
+					iteratedCount: 15,
+					expiredCount:  3,
 				},
 
 				storage: new(MockStorage),
@@ -70,8 +70,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 				maxIteratedCount:  20,
 				minExpiredPercent: 0.25,
 
-				iterated: 16,
-				expired:  3,
+				iteratedCount: 16,
+				expiredCount:  3,
 			},
 			wantOk: assert.True,
 		},
@@ -83,8 +83,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 					maxIteratedCount:  20,
 					minExpiredPercent: 0.25,
 
-					iterated: 25,
-					expired:  3,
+					iteratedCount: 25,
+					expiredCount:  3,
 				},
 
 				storage: new(MockStorage),
@@ -98,8 +98,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 				maxIteratedCount:  20,
 				minExpiredPercent: 0.25,
 
-				iterated: 26,
-				expired:  3,
+				iteratedCount: 26,
+				expiredCount:  3,
 			},
 			wantOk: assert.False,
 		},
@@ -110,8 +110,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 					maxIteratedCount:  20,
 					minExpiredPercent: 0.25,
 
-					iterated: 15,
-					expired:  3,
+					iteratedCount: 15,
+					expiredCount:  3,
 				},
 
 				storage: func() Storage {
@@ -130,8 +130,8 @@ func Test_iterator_handleIteration(test *testing.T) {
 				maxIteratedCount:  20,
 				minExpiredPercent: 0.25,
 
-				iterated: 16,
-				expired:  4,
+				iteratedCount: 16,
+				expiredCount:  4,
 			},
 			wantOk: assert.True,
 		},

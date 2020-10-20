@@ -4,8 +4,8 @@ type counter struct {
 	maxIteratedCount  int
 	minExpiredPercent float64
 
-	iterated int
-	expired  int
+	iteratedCount int
+	expiredCount  int
 }
 
 const (
@@ -21,10 +21,11 @@ func newCounter(maxIteratedCount int, minExpiredPercent float64) counter {
 }
 
 func (counter counter) stopIterate() bool {
-	return counter.iterated >= counter.maxIteratedCount
+	return counter.iteratedCount >= counter.maxIteratedCount
 }
 
 func (counter counter) stopClean() bool {
-	expiredPercent := float64(counter.expired) / float64(counter.iterated)
-	return counter.iterated == 0 || expiredPercent < counter.minExpiredPercent
+	expiredPercent :=
+		float64(counter.expiredCount) / float64(counter.iteratedCount)
+	return counter.iteratedCount == 0 || expiredPercent < counter.minExpiredPercent
 }

@@ -17,7 +17,7 @@ func Test_counter_stopIterate(test *testing.T) {
 	type fields struct {
 		maxIteratedCount int
 
-		iterated int
+		iteratedCount int
 	}
 
 	for _, data := range []struct {
@@ -27,17 +27,17 @@ func Test_counter_stopIterate(test *testing.T) {
 	}{
 		{
 			name:   "without iterations",
-			fields: fields{maxIteratedCount: 20, iterated: 0},
+			fields: fields{maxIteratedCount: 20, iteratedCount: 0},
 			want:   assert.False,
 		},
 		{
 			name:   "with iteration count less than maximum",
-			fields: fields{maxIteratedCount: 20, iterated: 10},
+			fields: fields{maxIteratedCount: 20, iteratedCount: 10},
 			want:   assert.False,
 		},
 		{
 			name:   "with iteration count greater than maximum",
-			fields: fields{maxIteratedCount: 20, iterated: 30},
+			fields: fields{maxIteratedCount: 20, iteratedCount: 30},
 			want:   assert.True,
 		},
 	} {
@@ -45,7 +45,7 @@ func Test_counter_stopIterate(test *testing.T) {
 			counter := counter{ // nolint: vetshadow
 				maxIteratedCount: data.fields.maxIteratedCount,
 
-				iterated: data.fields.iterated,
+				iteratedCount: data.fields.iteratedCount,
 			}
 			got := counter.stopIterate()
 
@@ -58,8 +58,8 @@ func Test_counter_stopClean(test *testing.T) {
 	type fields struct {
 		minExpiredPercent float64
 
-		iterated int
-		expired  int
+		iteratedCount int
+		expiredCount  int
 	}
 
 	for _, data := range []struct {
@@ -69,17 +69,17 @@ func Test_counter_stopClean(test *testing.T) {
 	}{
 		{
 			name:   "without iterations",
-			fields: fields{minExpiredPercent: 0.25, iterated: 0},
+			fields: fields{minExpiredPercent: 0.25, iteratedCount: 0},
 			want:   assert.True,
 		},
 		{
 			name:   "with expired percent less than minimum",
-			fields: fields{minExpiredPercent: 0.25, iterated: 15, expired: 3},
+			fields: fields{minExpiredPercent: 0.25, iteratedCount: 15, expiredCount: 3},
 			want:   assert.True,
 		},
 		{
 			name:   "with expired percent greater than minimum",
-			fields: fields{minExpiredPercent: 0.25, iterated: 15, expired: 5},
+			fields: fields{minExpiredPercent: 0.25, iteratedCount: 15, expiredCount: 5},
 			want:   assert.False,
 		},
 	} {
@@ -87,8 +87,8 @@ func Test_counter_stopClean(test *testing.T) {
 			counter := counter{ // nolint: vetshadow
 				minExpiredPercent: data.fields.minExpiredPercent,
 
-				iterated: data.fields.iterated,
-				expired:  data.fields.expired,
+				iteratedCount: data.fields.iteratedCount,
+				expiredCount:  data.fields.expiredCount,
 			}
 			got := counter.stopClean()
 

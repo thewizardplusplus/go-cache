@@ -32,9 +32,9 @@ func (iterator *iterator) handleIteration(
 ) bool {
 	if value.(cache.Value).IsExpired(iterator.clock) {
 		iterator.storage.Delete(key)
-		iterator.expired++
+		iterator.expiredCount++
 	}
 
-	iterator.iterated++
+	iterator.iteratedCount++
 	return !iterator.stopIterate()
 }
