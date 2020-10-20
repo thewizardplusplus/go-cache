@@ -12,8 +12,18 @@ type iterator struct {
 	clock   cache.Clock
 }
 
-func newIterator(storage hashmap.Storage, clock cache.Clock) *iterator {
-	return &iterator{storage: storage, clock: clock}
+func newIterator(
+	storage hashmap.Storage,
+	clock cache.Clock,
+	maxIteratedCount int,
+	minExpiredPercent float64,
+) *iterator {
+	return &iterator{
+		counter: newCounter(maxIteratedCount, minExpiredPercent),
+
+		storage: storage,
+		clock:   clock,
+	}
 }
 
 func (iterator *iterator) handleIteration(
