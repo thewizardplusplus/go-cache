@@ -32,7 +32,7 @@ const (
 
 func Example() {
 	storage := hashmap.NewConcurrentHashMap()
-	cleaner := gc.NewPartialGC(storage, time.Now)
+	cleaner := gc.NewPartialGC(storage)
 	go gc.Run(context.Background(), cleaner, gcPeriod)
 
 	timeZones := cache.NewCache(cache.WithStorage(storage))

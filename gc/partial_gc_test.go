@@ -14,7 +14,7 @@ import (
 
 func TestNewPartialGC(test *testing.T) {
 	storage := new(MockStorage)
-	gc := NewPartialGC(storage, time.Now)
+	gc := NewPartialGC(storage)
 
 	mock.AssertExpectationsForObjects(test, storage)
 	assert.Equal(test, storage, gc.storage)

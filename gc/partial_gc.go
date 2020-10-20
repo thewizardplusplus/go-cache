@@ -2,6 +2,7 @@ package gc
 
 import (
 	"context"
+	"time"
 
 	cache "github.com/thewizardplusplus/go-cache"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
@@ -16,8 +17,21 @@ type PartialGC struct {
 }
 
 // NewPartialGC ...
-func NewPartialGC(storage hashmap.Storage, clock cache.Clock) PartialGC {
-	return PartialGC{storage, clock, maxIteratedCount, minExpiredPercent}
+func NewPartialGC(
+	storage hashmap.Storage,
+	options ...PartialGCOption,
+) PartialGC {
+	gc := PartialGC{
+		storage:           storage,
+		clock:             time.Now,          // default value
+		maxIteratedCount:  maxIteratedCount,  // default value
+		minExpiredPercent: minExpiredPercent, // default value
+	}
+	for _, option := range options {
+		option(&gc)
+	}
+
+	return gc
 }
 
 // Clean ...
