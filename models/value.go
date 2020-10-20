@@ -1,9 +1,7 @@
-package cache
+package models
 
 import (
 	"time"
-
-	"github.com/thewizardplusplus/go-cache/models"
 )
 
 // Value ...
@@ -13,6 +11,6 @@ type Value struct {
 }
 
 // IsExpired ...
-func (value Value) IsExpired(clock models.Clock) bool {
+func (value Value) IsExpired(clock Clock) bool {
 	return !value.ExpirationTime.IsZero() && clock().After(value.ExpirationTime)
 }

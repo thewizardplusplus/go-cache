@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	cache "github.com/thewizardplusplus/go-cache"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -65,7 +64,7 @@ func Test_iterator_handleIteration(test *testing.T) {
 			},
 			args: args{
 				key:   NewMockKeyWithID(23),
-				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+				value: models.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
 			},
 			wantCounter: counter{
 				maxIteratedCount:  20,
@@ -93,7 +92,7 @@ func Test_iterator_handleIteration(test *testing.T) {
 			},
 			args: args{
 				key:   NewMockKeyWithID(23),
-				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+				value: models.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
 			},
 			wantCounter: counter{
 				maxIteratedCount:  20,
@@ -124,8 +123,11 @@ func Test_iterator_handleIteration(test *testing.T) {
 				clock: clock,
 			},
 			args: args{
-				key:   NewMockKeyWithID(23),
-				value: cache.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+				key: NewMockKeyWithID(23),
+				value: models.Value{
+					Data:           "data",
+					ExpirationTime: clock().Add(-time.Second),
+				},
 			},
 			wantCounter: counter{
 				maxIteratedCount:  20,

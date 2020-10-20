@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	cache "github.com/thewizardplusplus/go-cache"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -36,7 +35,7 @@ func (gc TotalGC) Clean(ctx context.Context) {
 }
 
 func (gc TotalGC) handleIteration(key hashmap.Key, value interface{}) bool {
-	if value.(cache.Value).IsExpired(gc.clock) {
+	if value.(models.Value).IsExpired(gc.clock) {
 		gc.storage.Delete(key)
 	}
 

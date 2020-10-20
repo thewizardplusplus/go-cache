@@ -108,7 +108,10 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", clock().Add(time.Second)}, true)
+						Return(
+							models.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+							true,
+						)
 
 					return storage
 				}(),
@@ -144,7 +147,10 @@ func TestCache_Get(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", clock().Add(-time.Second)}, true)
+						Return(
+							models.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+							true,
+						)
 
 					return storage
 				}(),
@@ -191,7 +197,10 @@ func TestCache_GetWithGC(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", clock().Add(time.Second)}, true)
+						Return(
+							models.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+							true,
+						)
 
 					return storage
 				}(),
@@ -227,7 +236,10 @@ func TestCache_GetWithGC(test *testing.T) {
 					storage := new(MockStorage)
 					storage.
 						On("Get", NewMockKeyWithID(23)).
-						Return(Value{"data", clock().Add(-time.Second)}, true)
+						Return(
+							models.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+							true,
+						)
 					storage.On("Delete", NewMockKeyWithID(23))
 
 					return storage
@@ -273,7 +285,10 @@ func TestCache_Set(test *testing.T) {
 			fields: fields{
 				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
-					storage.On("Set", NewMockKeyWithID(23), Value{"data", time.Time{}})
+					storage.On("Set", NewMockKeyWithID(23), models.Value{
+						Data:           "data",
+						ExpirationTime: time.Time{},
+					})
 
 					return storage
 				}(),
@@ -291,7 +306,10 @@ func TestCache_Set(test *testing.T) {
 				storage: func() hashmap.Storage {
 					storage := new(MockStorage)
 					storage.
-						On("Set", NewMockKeyWithID(23), Value{"data", clock().Add(time.Second)})
+						On("Set", NewMockKeyWithID(23), models.Value{
+							Data:           "data",
+							ExpirationTime: clock().Add(time.Second),
+						})
 
 					return storage
 				}(),

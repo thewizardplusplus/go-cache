@@ -1,7 +1,6 @@
 package gc
 
 import (
-	cache "github.com/thewizardplusplus/go-cache"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -31,7 +30,7 @@ func (iterator *iterator) handleIteration(
 	key hashmap.Key,
 	value interface{},
 ) bool {
-	if value.(cache.Value).IsExpired(iterator.clock) {
+	if value.(models.Value).IsExpired(iterator.clock) {
 		iterator.storage.Delete(key)
 		iterator.expiredCount++
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	cache "github.com/thewizardplusplus/go-cache"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -125,7 +124,7 @@ func TestTotalGC_Clean(test *testing.T) {
 									expirationTime = clock().Add(time.Second)
 								}
 
-								if ok := handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), models.Value{
 									Data:           "data",
 									ExpirationTime: expirationTime,
 								}); !ok {
@@ -159,7 +158,7 @@ func TestTotalGC_Clean(test *testing.T) {
 							for i := 0; i < 15; i++ {
 								time.Sleep(timedTestDelay * 3 / 4)
 
-								if ok := handler(NewMockKeyWithID(23), cache.Value{
+								if ok := handler(NewMockKeyWithID(23), models.Value{
 									Data:           "data",
 									ExpirationTime: clock().Add(-time.Second),
 								}); !ok {
@@ -222,7 +221,7 @@ func TestTotalGC_handleIteration(test *testing.T) {
 			},
 			args: args{
 				key:   NewMockKeyWithID(23),
-				value: cache.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
+				value: models.Value{Data: "data", ExpirationTime: clock().Add(time.Second)},
 			},
 			want: assert.True,
 		},
@@ -238,8 +237,11 @@ func TestTotalGC_handleIteration(test *testing.T) {
 				clock: clock,
 			},
 			args: args{
-				key:   NewMockKeyWithID(23),
-				value: cache.Value{Data: "data", ExpirationTime: clock().Add(-time.Second)},
+				key: NewMockKeyWithID(23),
+				value: models.Value{
+					Data:           "data",
+					ExpirationTime: clock().Add(-time.Second),
+				},
 			},
 			want: assert.True,
 		},

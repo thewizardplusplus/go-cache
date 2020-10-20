@@ -41,7 +41,7 @@ func (cache Cache) Get(key hashmap.Key) (data interface{}, err error) {
 		return nil, ErrKeyMissed
 	}
 
-	value := data.(Value)
+	value := data.(models.Value)
 	if value.IsExpired(cache.clock) {
 		return nil, ErrKeyExpired
 	}
@@ -70,7 +70,10 @@ func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 		expirationTime = cache.clock().Add(ttl)
 	}
 
-	cache.storage.Set(key, Value{data, expirationTime})
+	cache.storage.Set(key, models.Value{
+		Data:           data,
+		ExpirationTime: expirationTime,
+	})
 }
 
 // Delete ...

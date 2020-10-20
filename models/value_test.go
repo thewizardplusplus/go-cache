@@ -1,11 +1,10 @@
-package cache
+package models
 
 import (
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thewizardplusplus/go-cache/models"
 )
 
 func TestValue_IsExpired(test *testing.T) {
@@ -14,7 +13,7 @@ func TestValue_IsExpired(test *testing.T) {
 		ExpirationTime time.Time
 	}
 	type args struct {
-		clock models.Clock
+		clock Clock
 	}
 
 	for _, data := range []struct {
@@ -75,4 +74,13 @@ func TestValue_IsExpired(test *testing.T) {
 			data.want(test, got)
 		})
 	}
+}
+
+func clock() time.Time {
+	return time.Date(
+		2006, time.January, 2, // year, month, day
+		15, 4, 5, // hour, minute, second
+		0,        // nanosecond
+		time.UTC, // location
+	)
 }
