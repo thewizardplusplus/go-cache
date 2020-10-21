@@ -54,3 +54,14 @@ func WithGCAndClock(clock models.Clock) OptionWithGC {
 		config.clock = clock
 	}
 }
+
+// WithGCAndGCFactory ...
+//
+// Default: a factory that produces an instance of the gc.PartialGC structure
+// with default options.
+//
+func WithGCAndGCFactory(gcFactory GCFactory) OptionWithGC {
+	return func(config *ConfigWithGC) {
+		config.gcFactory = gcFactory
+	}
+}
