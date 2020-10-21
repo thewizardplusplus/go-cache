@@ -21,6 +21,10 @@ func NewMockKeyWithID(id int) *MockKeyWithID {
 	return &MockKeyWithID{ID: id}
 }
 
+func (key *MockKeyWithID) Copy() *MockKeyWithID {
+	return NewMockKeyWithID(key.ID)
+}
+
 func TestNewCache(test *testing.T) {
 	type args struct {
 		options []Option
