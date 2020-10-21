@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/thewizardplusplus/go-cache/gc"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -26,7 +27,99 @@ func Test_newConfigWithGC(test *testing.T) {
 		wantGCType    gc.GC
 		wantGCPeriod  time.Duration
 	}{
-		// TODO: Add test cases.
+		{
+			name: "with the default config",
+			args: args{
+				options: nil,
+			},
+			wantCtx:       context.Background(),
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: time.Now(),
+			wantGCType:    gc.PartialGC{},
+			wantGCPeriod:  100 * time.Millisecond,
+		},
+		{
+			name: "with the set context",
+			args: args{
+				options: []OptionWithGC{WithGCAndContext(new(MockContext))},
+			},
+			wantCtx:       new(MockContext),
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: time.Now(),
+			wantGCType:    gc.PartialGC{},
+			wantGCPeriod:  100 * time.Millisecond,
+		},
+		{
+			name: "with the set storage",
+			args: args{
+				options: []OptionWithGC{WithGCAndStorage(new(MockStorage))},
+			},
+			wantCtx:       context.Background(),
+			wantStorage:   new(MockStorage),
+			wantClockTime: time.Now(),
+			wantGCType:    gc.PartialGC{},
+			wantGCPeriod:  100 * time.Millisecond,
+		},
+		{
+			name: "with the set clock",
+			args: args{
+				options: []OptionWithGC{WithGCAndClock(clock)},
+			},
+			wantCtx:       context.Background(),
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: clock(),
+			wantGCType:    gc.PartialGC{},
+			wantGCPeriod:  100 * time.Millisecond,
+		},
+		{
+			name: "with the set GC factory",
+			args: args{
+				options: []OptionWithGC{
+					WithGCAndGCFactory(
+						func(storage hashmap.Storage, clock models.Clock) gc.GC {
+							return new(MockGC)
+						},
+					),
+				},
+			},
+			wantCtx:       context.Background(),
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: time.Now(),
+			wantGCType:    new(MockGC),
+			wantGCPeriod:  100 * time.Millisecond,
+		},
+		{
+			name: "with the set GC period",
+			args: args{
+				options: []OptionWithGC{WithGCAndGCPeriod(23 * time.Second)},
+			},
+			wantCtx:       context.Background(),
+			wantStorage:   hashmap.NewConcurrentHashMap(),
+			wantClockTime: time.Now(),
+			wantGCType:    gc.PartialGC{},
+			wantGCPeriod:  23 * time.Second,
+		},
+		{
+			name: "with the set config",
+			args: args{
+				options: []OptionWithGC{
+					WithGCAndContext(new(MockContext)),
+					WithGCAndStorage(new(MockStorage)),
+					WithGCAndClock(clock),
+					WithGCAndGCFactory(
+						func(storage hashmap.Storage, clock models.Clock) gc.GC {
+							return new(MockGC)
+						},
+					),
+					WithGCAndGCPeriod(23 * time.Second),
+				},
+			},
+			wantCtx:       new(MockContext),
+			wantStorage:   new(MockStorage),
+			wantClockTime: clock(),
+			wantGCType:    new(MockGC),
+			wantGCPeriod:  23 * time.Second,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			got := newConfigWithGC(data.args.options)
