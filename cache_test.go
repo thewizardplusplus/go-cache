@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"math/rand"
 	"testing"
 	"time"
 
@@ -264,6 +265,60 @@ func TestCache_GetWithGC(test *testing.T) {
 			mock.AssertExpectationsForObjects(test, data.fields.storage, data.args.key)
 			assert.Equal(test, data.wantData, gotData)
 			data.wantErr(test, gotErr)
+		})
+	}
+}
+
+func TestCache_Iterate(test *testing.T) {
+	type bucket struct {
+		key   hashmap.Key
+		value interface{}
+		ttl   time.Duration
+	}
+	type fields struct {
+		buckets []bucket
+		clock   models.Clock
+	}
+
+	for _, data := range []struct {
+		name             string
+		fields           fields
+		interruptOnCount int
+		wantBuckets      []bucket
+		wantOk           assert.BoolAssertionFunc
+	}{
+		// TODO: Add test cases.
+	} {
+		test.Run(data.name, func(test *testing.T) {
+			// reset the random generator to make tests deterministic
+			rand.Seed(1)
+
+			cache := Cache{
+				storage: hashmap.NewConcurrentHashMap(),
+				clock:   data.fields.clock,
+			}
+			for _, bucket := range data.fields.buckets {
+				cache.Set(bucket.key, bucket.value, bucket.ttl)
+			}
+
+			var gotBuckets []bucket
+			gotOk := cache.Iterate(func(key hashmap.Key, value interface{}) bool {
+				gotBuckets = append(gotBuckets, bucket{
+					key:   key.(*MockKeyWithID).Copy(),
+					value: value,
+				})
+
+				// interrupt after a specified count of got buckets
+				return len(gotBuckets) < data.interruptOnCount
+			})
+
+			for index, bucket := range data.fields.buckets {
+				mock.AssertExpectationsForObjects(test, bucket.key)
+
+				data.fields.buckets[index].key = bucket.key.(*MockKeyWithID).Copy()
+			}
+			assert.Equal(test, data.wantBuckets, gotBuckets)
+			data.wantOk(test, gotOk)
 		})
 	}
 }
