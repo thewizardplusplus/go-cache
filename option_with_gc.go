@@ -23,3 +23,13 @@ type ConfigWithGC struct {
 
 // OptionWithGC ...
 type OptionWithGC func(config *ConfigWithGC)
+
+// WithGCAndContext ...
+//
+// Default: a result of the context.Background() function.
+//
+func WithGCAndContext(ctx context.Context) OptionWithGC {
+	return func(config *ConfigWithGC) {
+		config.ctx = ctx
+	}
+}
