@@ -65,3 +65,13 @@ func WithGCAndGCFactory(gcFactory GCFactory) OptionWithGC {
 		config.gcFactory = gcFactory
 	}
 }
+
+// WithGCAndGCPeriod ...
+//
+// Default: 100 ms.
+//
+func WithGCAndGCPeriod(gcPeriod time.Duration) OptionWithGC {
+	return func(config *ConfigWithGC) {
+		config.gcPeriod = gcPeriod
+	}
+}
