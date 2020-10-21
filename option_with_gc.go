@@ -33,3 +33,14 @@ func WithGCAndContext(ctx context.Context) OptionWithGC {
 		config.ctx = ctx
 	}
 }
+
+// WithGCAndStorage ...
+//
+// Default: an instance of the hashmap.ConcurrentHashMap structure
+// with default options.
+//
+func WithGCAndStorage(storage hashmap.Storage) OptionWithGC {
+	return func(config *ConfigWithGC) {
+		config.storage = storage
+	}
+}
