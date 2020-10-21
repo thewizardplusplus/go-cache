@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"errors"
 	"time"
 
@@ -38,19 +37,7 @@ func NewCache(options ...Option) Cache {
 
 // NewCacheWithGC ...
 func NewCacheWithGC(options ...OptionWithGC) Cache {
-	// default config
-	config := ConfigWithGC{
-		ctx:     context.Background(),
-		storage: hashmap.NewConcurrentHashMap(),
-		clock:   time.Now,
-		gcFactory: func(storage hashmap.Storage, clock models.Clock) gc.GC {
-			return gc.NewPartialGC(storage, gc.PartialGCWithClock(clock))
-		},
-		gcPeriod: 100 * time.Millisecond,
-	}
-	for _, option := range options {
-		option(&config)
-	}
+	config := newConfigWithGC(options)
 
 	gcInstance := config.gcFactory(config.storage, config.clock)
 	go gc.Run(config.ctx, gcInstance, config.gcPeriod)
