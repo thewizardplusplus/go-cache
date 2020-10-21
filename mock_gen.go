@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 
+	"github.com/thewizardplusplus/go-cache/gc"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -44,4 +45,14 @@ type Handler interface {
 //
 type Storage interface {
 	hashmap.Storage
+}
+
+//go:generate mockery -name=GC -inpkg -case=underscore -testonly
+
+// GC ...
+//
+// It's used only for mock generating.
+//
+type GC interface {
+	gc.GC
 }
