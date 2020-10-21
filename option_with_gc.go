@@ -44,3 +44,13 @@ func WithGCAndStorage(storage hashmap.Storage) OptionWithGC {
 		config.storage = storage
 	}
 }
+
+// WithGCAndClock ...
+//
+// Default: the time.Now() function.
+//
+func WithGCAndClock(clock models.Clock) OptionWithGC {
+	return func(config *ConfigWithGC) {
+		config.clock = clock
+	}
+}
