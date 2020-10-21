@@ -13,6 +13,8 @@ $ go get github.com/thewizardplusplus/go-cache
 
 ## Example
 
+`cache.NewCache()`:
+
 ```go
 package main
 
@@ -48,8 +50,8 @@ const (
 
 func main() {
 	storage := hashmap.NewConcurrentHashMap()
-	cleaner := gc.NewPartialGC(storage)
-	go gc.Run(context.Background(), cleaner, gcPeriod)
+	gcInstance := gc.NewPartialGC(storage)
+	go gc.Run(context.Background(), gcInstance, gcPeriod)
 
 	timeZones := cache.NewCache(cache.WithStorage(storage))
 	timeZones.Set(StringKey("EST"), -5*60*60, exampleDelay/2)
