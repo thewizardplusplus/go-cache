@@ -1,4 +1,4 @@
-package gc
+package gc_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	cache "github.com/thewizardplusplus/go-cache"
+	"github.com/thewizardplusplus/go-cache/gc"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -48,8 +49,8 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 					defer cancel()
 
 					storage := hashmap.NewConcurrentHashMap()
-					gc := NewPartialGC(storage)
-					go Run(ctx, gc, periodForBench)
+					gcInstance := gc.NewPartialGC(storage)
+					go gc.Run(ctx, gcInstance, periodForBench)
 
 					cache := cache.NewCache(cache.WithStorage(storage))
 					data.prepare(cache, storageSize, expiredPercent)
