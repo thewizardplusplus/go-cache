@@ -287,7 +287,100 @@ func TestCache_Iterate(test *testing.T) {
 		wantBuckets      []bucket
 		wantOk           assert.BoolAssertionFunc
 	}{
-		// TODO: Add test cases.
+		{
+			name: "without buckets",
+			fields: fields{
+				buckets: nil,
+				clock:   clock,
+			},
+			interruptOnCount: 10,
+			wantBuckets:      nil,
+			wantOk:           assert.True,
+		},
+		{
+			name: "with few not expired buckets and without an interrupt",
+			fields: fields{
+				buckets: func() []bucket {
+					keyOne := NewMockKeyWithID(12)
+					keyOne.On("Hash").Return(12)
+
+					keyTwo := NewMockKeyWithID(23)
+					keyTwo.On("Hash").Return(23)
+
+					keyThree := NewMockKeyWithID(42)
+					keyThree.On("Hash").Return(42)
+
+					return []bucket{
+						{key: keyOne, value: "one"},
+						{key: keyTwo, value: "two"},
+						{key: keyThree, value: "three"},
+					}
+				}(),
+				clock: clock,
+			},
+			interruptOnCount: 10,
+			wantBuckets: []bucket{
+				{key: NewMockKeyWithID(12), value: "one"},
+				{key: NewMockKeyWithID(42), value: "three"},
+				{key: NewMockKeyWithID(23), value: "two"},
+			},
+			wantOk: assert.True,
+		},
+		{
+			name: "with few not expired buckets and with an interrupt",
+			fields: fields{
+				buckets: func() []bucket {
+					keyOne := NewMockKeyWithID(12)
+					keyOne.On("Hash").Return(12)
+
+					keyTwo := NewMockKeyWithID(23)
+					keyTwo.On("Hash").Return(23)
+
+					keyThree := NewMockKeyWithID(42)
+					keyThree.On("Hash").Return(42)
+
+					return []bucket{
+						{key: keyOne, value: "one"},
+						{key: keyTwo, value: "two"},
+						{key: keyThree, value: "three"},
+					}
+				}(),
+				clock: clock,
+			},
+			interruptOnCount: 2,
+			wantBuckets: []bucket{
+				{key: NewMockKeyWithID(12), value: "one"},
+				{key: NewMockKeyWithID(42), value: "three"},
+			},
+			wantOk: assert.False,
+		},
+		{
+			name: "with few not expired and expired buckets and without an interrupt",
+			fields: fields{
+				buckets: func() []bucket {
+					keyOne := NewMockKeyWithID(12)
+					keyOne.On("Hash").Return(12)
+
+					keyTwo := NewMockKeyWithID(23)
+					keyTwo.On("Hash").Return(23)
+
+					keyThree := NewMockKeyWithID(42)
+					keyThree.On("Hash").Return(42)
+
+					return []bucket{
+						{key: keyOne, value: "one"},
+						{key: keyTwo, value: "two", ttl: -time.Second},
+						{key: keyThree, value: "three", ttl: -time.Second},
+					}
+				}(),
+				clock: clock,
+			},
+			interruptOnCount: 10,
+			wantBuckets: []bucket{
+				{key: NewMockKeyWithID(12), value: "one"},
+			},
+			wantOk: assert.True,
+		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
 			// reset the random generator to make tests deterministic
