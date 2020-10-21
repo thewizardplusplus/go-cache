@@ -20,3 +20,6 @@ type ConfigWithGC struct {
 	gcFactory GCFactory
 	gcPeriod  time.Duration
 }
+
+// OptionWithGC ...
+type OptionWithGC func(config *ConfigWithGC)
