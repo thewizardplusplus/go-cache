@@ -93,22 +93,29 @@ func TestNewCache(test *testing.T) {
 
 func TestNewCacheWithGC(test *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-
 	storage := new(MockStorage)
-	storage.On("Iterate", mock.AnythingOfType("hashmap.Handler")).Return(true)
+
+	gcInstance := new(MockGC)
+	gcInstance.On("Clean", ctx).Return()
+
+	gcFactoryHandler := new(MockGCFactoryHandler)
+	gcFactoryHandler.
+		On("NewGC", storage, mock.AnythingOfType("models.Clock")).
+		Return(gcInstance)
 
 	const gcPeriod = 100 * time.Millisecond
 	cache := NewCacheWithGC(
 		WithGCAndContext(ctx),
 		WithGCAndStorage(storage),
 		WithGCAndClock(clock),
+		WithGCAndGCFactory(gcFactoryHandler.NewGC),
 		WithGCAndGCPeriod(gcPeriod),
 	)
 
 	time.Sleep(gcPeriod * 2)
 	cancel()
 
-	mock.AssertExpectationsForObjects(test, storage)
+	mock.AssertExpectationsForObjects(test, storage, gcInstance, gcFactoryHandler)
 	assert.Equal(test, storage, cache.storage)
 
 	// don't use the reflect.Value.Pointer() method for this check; see details:
