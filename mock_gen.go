@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/thewizardplusplus/go-cache/gc"
+	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
 
@@ -55,4 +56,14 @@ type Storage interface {
 //
 type GC interface {
 	gc.GC
+}
+
+//go:generate mockery -name=GCFactoryHandler -inpkg -case=underscore -testonly
+
+// GCFactoryHandler ...
+//
+// It's used only for mock generating.
+//
+type GCFactoryHandler interface {
+	NewGC(storage hashmap.Storage, clock models.Clock) gc.GC
 }
