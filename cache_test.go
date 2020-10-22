@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -88,6 +89,33 @@ func TestNewCache(test *testing.T) {
 			assert.WithinDuration(test, data.wantClockTime, got.clock(), time.Hour)
 		})
 	}
+}
+
+func TestNewCacheWithGC(test *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	storage := new(MockStorage)
+	storage.On("Iterate", mock.AnythingOfType("hashmap.Handler")).Return(true)
+
+	const gcPeriod = 100 * time.Millisecond
+	cache := NewCacheWithGC(
+		WithGCAndContext(ctx),
+		WithGCAndStorage(storage),
+		WithGCAndClock(clock),
+		WithGCAndGCPeriod(gcPeriod),
+	)
+
+	time.Sleep(gcPeriod * 2)
+	cancel()
+
+	mock.AssertExpectationsForObjects(test, storage)
+	assert.Equal(test, storage, cache.storage)
+
+	// don't use the reflect.Value.Pointer() method for this check; see details:
+	// * https://golang.org/pkg/reflect/#Value.Pointer
+	// * https://stackoverflow.com/a/9644797
+	require.NotNil(test, cache.clock)
+	assert.WithinDuration(test, clock(), cache.clock(), time.Hour)
 }
 
 func TestCache_Get(test *testing.T) {
