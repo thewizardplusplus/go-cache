@@ -86,6 +86,20 @@ func (cache Cache) Iterate(handler hashmap.Handler) bool {
 	})
 }
 
+// IterateWithGC ...
+func (cache Cache) IterateWithGC(handler hashmap.Handler) bool {
+	return cache.storage.Iterate(func(key hashmap.Key, data interface{}) bool {
+		value := data.(models.Value)
+		if value.IsExpired(cache.clock) {
+			cache.storage.Delete(key)
+
+			return true
+		}
+
+		return handler(key, value.Data)
+	})
+}
+
 // Set ...
 func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 	var expirationTime time.Time
