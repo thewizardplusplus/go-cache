@@ -1,10 +1,12 @@
 package cache
 
 import (
+	"context"
 	"errors"
 	"time"
 
 	"github.com/thewizardplusplus/go-cache/gc"
+	hashmaputils "github.com/thewizardplusplus/go-cache/hashmap-utils"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -75,15 +77,18 @@ func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
 }
 
 // Iterate ...
-func (cache Cache) Iterate(handler hashmap.Handler) bool {
-	return cache.storage.Iterate(func(key hashmap.Key, data interface{}) bool {
-		value := data.(models.Value)
-		if value.IsExpired(cache.clock) {
-			return true
-		}
+func (cache Cache) Iterate(ctx context.Context, handler hashmap.Handler) bool {
+	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
+		ctx,
+		func(key hashmap.Key, data interface{}) bool {
+			value := data.(models.Value)
+			if value.IsExpired(cache.clock) {
+				return true
+			}
 
-		return handler(key, value.Data)
-	})
+			return handler(key, value.Data)
+		},
+	))
 }
 
 // IterateWithGC ...
