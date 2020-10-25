@@ -513,10 +513,14 @@ func TestCache_IterateWithGC(test *testing.T) {
 		buckets []bucket
 		clock   models.Clock
 	}
+	type args struct {
+		ctx context.Context
+	}
 
 	for _, data := range []struct {
 		name             string
 		fields           fields
+		args             args
 		interruptOnCount int
 		wantBuckets      []bucket
 		wantOk           assert.BoolAssertionFunc
@@ -526,6 +530,9 @@ func TestCache_IterateWithGC(test *testing.T) {
 			fields: fields{
 				buckets: nil,
 				clock:   clock,
+			},
+			args: args{
+				ctx: context.Background(),
 			},
 			interruptOnCount: 10,
 			wantBuckets:      nil,
@@ -551,6 +558,9 @@ func TestCache_IterateWithGC(test *testing.T) {
 					}
 				}(),
 				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
 			},
 			interruptOnCount: 10,
 			wantBuckets: []bucket{
@@ -580,6 +590,9 @@ func TestCache_IterateWithGC(test *testing.T) {
 					}
 				}(),
 				clock: clock,
+			},
+			args: args{
+				ctx: context.Background(),
 			},
 			interruptOnCount: 2,
 			wantBuckets: []bucket{
@@ -613,11 +626,47 @@ func TestCache_IterateWithGC(test *testing.T) {
 				}(),
 				clock: clock,
 			},
+			args: args{
+				ctx: context.Background(),
+			},
 			interruptOnCount: 10,
 			wantBuckets: []bucket{
 				{key: NewMockKeyWithID(12), value: "one"},
 			},
 			wantOk: assert.True,
+		},
+		{
+			name: "with a canceled context",
+			fields: fields{
+				buckets: func() []bucket {
+					keyOne := NewMockKeyWithID(12)
+					keyOne.On("Hash").Return(12)
+
+					keyTwo := NewMockKeyWithID(23)
+					keyTwo.On("Hash").Return(23)
+
+					keyThree := NewMockKeyWithID(42)
+					keyThree.On("Hash").Return(42)
+
+					return []bucket{
+						{key: keyOne, value: "one"},
+						{key: keyTwo, value: "two"},
+						{key: keyThree, value: "three"},
+					}
+				}(),
+				clock: clock,
+			},
+			args: args{
+				ctx: func() context.Context {
+					ctx, cancel := context.WithCancel(context.Background())
+					cancel()
+
+					return ctx
+				}(),
+			},
+			interruptOnCount: 10,
+			wantBuckets:      nil,
+			wantOk:           assert.False,
 		},
 	} {
 		test.Run(data.name, func(test *testing.T) {
@@ -633,15 +682,18 @@ func TestCache_IterateWithGC(test *testing.T) {
 			}
 
 			var gotBuckets []bucket
-			gotOk := cache.IterateWithGC(func(key hashmap.Key, value interface{}) bool {
-				gotBuckets = append(gotBuckets, bucket{
-					key:   key.(*MockKeyWithID).Copy(),
-					value: value,
-				})
+			gotOk := cache.IterateWithGC(
+				data.args.ctx,
+				func(key hashmap.Key, value interface{}) bool {
+					gotBuckets = append(gotBuckets, bucket{
+						key:   key.(*MockKeyWithID).Copy(),
+						value: value,
+					})
 
-				// interrupt after a specified count of got buckets
-				return len(gotBuckets) < data.interruptOnCount
-			})
+					// interrupt after a specified count of got buckets
+					return len(gotBuckets) < data.interruptOnCount
+				},
+			)
 
 			for index, bucket := range data.fields.buckets {
 				mock.AssertExpectationsForObjects(test, bucket.key)

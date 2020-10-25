@@ -92,17 +92,23 @@ func (cache Cache) Iterate(ctx context.Context, handler hashmap.Handler) bool {
 }
 
 // IterateWithGC ...
-func (cache Cache) IterateWithGC(handler hashmap.Handler) bool {
-	return cache.storage.Iterate(func(key hashmap.Key, data interface{}) bool {
-		value := data.(models.Value)
-		if value.IsExpired(cache.clock) {
-			cache.storage.Delete(key)
+func (cache Cache) IterateWithGC(
+	ctx context.Context,
+	handler hashmap.Handler,
+) bool {
+	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
+		ctx,
+		func(key hashmap.Key, data interface{}) bool {
+			value := data.(models.Value)
+			if value.IsExpired(cache.clock) {
+				cache.storage.Delete(key)
 
-			return true
-		}
+				return true
+			}
 
-		return handler(key, value.Data)
-	})
+			return handler(key, value.Data)
+		},
+	))
 }
 
 // Set ...
