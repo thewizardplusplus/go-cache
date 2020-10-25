@@ -78,17 +78,7 @@ func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
 
 // Iterate ...
 func (cache Cache) Iterate(ctx context.Context, handler hashmap.Handler) bool {
-	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
-		ctx,
-		func(key hashmap.Key, data interface{}) bool {
-			value := data.(models.Value)
-			if value.IsExpired(cache.clock) {
-				return true
-			}
-
-			return handler(key, value.Data)
-		},
-	))
+	return cache.iterateWithExpiredHandler(ctx, handler, func(key hashmap.Key) {})
 }
 
 // IterateWithGC ...
@@ -96,19 +86,7 @@ func (cache Cache) IterateWithGC(
 	ctx context.Context,
 	handler hashmap.Handler,
 ) bool {
-	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
-		ctx,
-		func(key hashmap.Key, data interface{}) bool {
-			value := data.(models.Value)
-			if value.IsExpired(cache.clock) {
-				cache.storage.Delete(key)
-
-				return true
-			}
-
-			return handler(key, value.Data)
-		},
-	))
+	return cache.iterateWithExpiredHandler(ctx, handler, cache.storage.Delete)
 }
 
 // Set ...
@@ -127,4 +105,24 @@ func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 // Delete ...
 func (cache Cache) Delete(key hashmap.Key) {
 	cache.storage.Delete(key)
+}
+
+func (cache Cache) iterateWithExpiredHandler(
+	ctx context.Context,
+	handler hashmap.Handler,
+	expiredHandler func(key hashmap.Key),
+) bool {
+	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
+		ctx,
+		func(key hashmap.Key, data interface{}) bool {
+			value := data.(models.Value)
+			if value.IsExpired(cache.clock) {
+				expiredHandler(key)
+
+				return true
+			}
+
+			return handler(key, value.Data)
+		},
+	))
 }
