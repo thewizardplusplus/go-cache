@@ -101,12 +101,12 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:4d3b89c3de0786b6b7707ffaeae9ffeaf9f208b19607b306d742f2de4e649cdb"
+  digest = "1:ae7ae9dc2b8dd03bf4d1993d4232c2e191c8f7ab66593d356c5ffd870a8ccf2b"
   name = "github.com/thewizardplusplus/go-hashmap"
   packages = ["."]
   pruneopts = "UT"
-  revision = "dac82712f09c3ddaf083c9ee369e1245888bdb88"
-  version = "v1.4.1"
+  revision = "0b1ac5b738a65c9e87eb1a6d7805dd45626b54de"
+  version = "v1.5"
 
 [[projects]]
   branch = "master"
