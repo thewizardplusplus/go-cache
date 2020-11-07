@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	hashmaputils "github.com/thewizardplusplus/go-cache/hashmap-utils"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -48,16 +47,9 @@ func (gc PartialGC) Clean(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-			iterator := newIterator(
-				gc.storage,
-				gc.clock,
-				gc.maxIteratedCount,
-				gc.minExpiredPercent,
-			)
-			gc.storage.Iterate(hashmaputils.HandlerWithInterruption(
-				ctx,
-				iterator.handleIteration,
-			))
+			iterator :=
+				newIterator(gc.storage, gc.clock, gc.maxIteratedCount, gc.minExpiredPercent)
+			gc.storage.Iterate(hashmap.WithInterruption(ctx, iterator.handleIteration))
 
 			if iterator.stopClean() {
 				return

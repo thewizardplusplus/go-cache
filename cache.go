@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/thewizardplusplus/go-cache/gc"
-	hashmaputils "github.com/thewizardplusplus/go-cache/hashmap-utils"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
@@ -112,9 +111,8 @@ func (cache Cache) iterateWithExpiredHandler(
 	handler hashmap.Handler,
 	expiredHandler func(key hashmap.Key),
 ) bool {
-	return cache.storage.Iterate(hashmaputils.HandlerWithInterruption(
-		ctx,
-		func(key hashmap.Key, data interface{}) bool {
+	return cache.storage.Iterate(
+		hashmap.WithInterruption(ctx, func(key hashmap.Key, data interface{}) bool {
 			value := data.(models.Value)
 			if value.IsExpired(cache.clock) {
 				expiredHandler(key)
@@ -123,6 +121,6 @@ func (cache Cache) iterateWithExpiredHandler(
 			}
 
 			return handler(key, value.Data)
-		},
-	))
+		}),
+	)
 }
