@@ -8,6 +8,28 @@
 
 ## [v1.2](https://github.com/thewizardplusplus/go-cache/tree/v1.2) (2019-07-09)
 
+- implementation of garbage collection:
+  - independent implementation of garbage collection running;
+  - implementation of partial garbage collection (based on [expiration in Redis](https://redis.io/commands/expire#how-redis-expires-keys)).
+
+### Features
+
+- implementation of an in-memory cache:
+  - operations:
+    - getting a value by a key:
+      - signaling a reason for the absence of a key - missed or expired;
+    - getting a value by a key with deletion of expired values:
+      - signaling a reason for the absence of a key - missed or expired;
+    - setting a key-value pair with a specified time to live:
+      - support of key-value pairs without a set time to live (persistent);
+    - deletion;
+- implementation of garbage collection:
+  - independent implementation of garbage collection running:
+    - support interruption via a context;
+    - support specification of a running period;
+  - implementation of total garbage collection (based on a full scan);
+  - implementation of partial garbage collection (based on [expiration in Redis](https://redis.io/commands/expire#how-redis-expires-keys)).
+
 ## [v1.1](https://github.com/thewizardplusplus/go-cache/tree/v1.1) (2019-07-08)
 
 - implementation of an in-memory cache:
