@@ -11,3 +11,15 @@
 ## [v1.1](https://github.com/thewizardplusplus/go-cache/tree/v1.1) (2019-07-08)
 
 ## [v1.0](https://github.com/thewizardplusplus/go-cache/tree/v1.0) (2019-07-05)
+
+### Features
+
+- implementation of an in-memory cache:
+  - operations:
+    - getting a value by a key:
+      - signaling a reason for the absence of a key - missed or expired;
+    - getting a value by a key with deletion of expired values:
+      - signaling a reason for the absence of a key - missed or expired;
+    - setting a key-value pair with a specified time to live:
+      - support of key-value pairs without a set time to live (persistent);
+    - deletion.
