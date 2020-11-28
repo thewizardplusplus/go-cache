@@ -6,6 +6,27 @@
 
 ## [v1.3](https://github.com/thewizardplusplus/go-cache/tree/v1.3) (2019-08-15)
 
+- implementation of garbage collection:
+  - improve support of interruption via a context:
+    - pass a context to the `gc.GC.Clean()` method;
+    - additional interruption via a context:
+      - in the `gc.TotalGC.Clean()` method;
+      - in the `gc.PartialGC.Clean()` method;
+- improve benchmarks:
+  - add to benchmarks:
+    - different storage sizes;
+    - different expired percents;
+  - stop at the end of each benchmark:
+    - garbage collecting;
+    - additional concurrent loading;
+  - slow down additional concurrent loading;
+- refactoring:
+  - extract from the `gc.TotalGC.Clean()` method:
+    - the `gc.TotalGC.handleIteration()` method;
+  - extract from the `gc.PartialGC.Clean()` method:
+    - the `gc.counter` structure;
+    - the `gc.iterator` structure.
+
 ## [v1.2](https://github.com/thewizardplusplus/go-cache/tree/v1.2) (2019-07-09)
 
 - implementation of garbage collection:
