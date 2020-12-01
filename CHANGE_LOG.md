@@ -4,6 +4,52 @@
 
 ## [v1.4](https://github.com/thewizardplusplus/go-cache/tree/v1.4) (2020-10-20)
 
+- implementation of an in-memory cache:
+  - options (optional):
+    - implementation of a key-value storage;
+    - callback for timing;
+- implementation of garbage collection:
+  - implementation of total garbage collection (based on a full scan):
+    - options (optional):
+      - callback for timing;
+  - implementation of partial garbage collection (based on [expiration in Redis](https://redis.io/commands/expire#how-redis-expires-keys)):
+    - options (optional):
+      - callback for timing;
+      - maximum iteration count;
+      - minimum percent of expired values;
+- refactoring:
+  - update the `github.com/thewizardplusplus/go-hashmap` package;
+  - use the `hashmap.Storage` interface;
+- misc.:
+  - improve the Travis CI configuration.
+
+### Features
+
+- implementation of an in-memory cache:
+  - operations:
+    - getting a value by a key:
+      - signaling a reason for the absence of a key - missed or expired;
+    - getting a value by a key with deletion of expired values:
+      - signaling a reason for the absence of a key - missed or expired;
+    - setting a key-value pair with a specified time to live:
+      - support of key-value pairs without a set time to live (persistent);
+    - deletion;
+  - options (optional):
+    - implementation of a key-value storage;
+    - callback for timing;
+- implementation of garbage collection:
+  - independent implementation of garbage collection running:
+    - support interruption via a context;
+    - support specification of a running period;
+  - implementation of total garbage collection (based on a full scan):
+    - options (optional):
+      - callback for timing;
+  - implementation of partial garbage collection (based on [expiration in Redis](https://redis.io/commands/expire#how-redis-expires-keys)):
+    - options (optional):
+      - callback for timing;
+      - maximum iteration count;
+      - minimum percent of expired values.
+
 ## [v1.3](https://github.com/thewizardplusplus/go-cache/tree/v1.3) (2019-08-15)
 
 - implementation of garbage collection:
