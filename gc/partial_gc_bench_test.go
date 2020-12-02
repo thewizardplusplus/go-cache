@@ -56,7 +56,7 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 					data.prepare(cache, storageSize, expiredPercent)
 
 					// add concurrent load
-					go func() {
+					go func(storageSize int, expiredPercent float32) {
 						ticker := time.NewTicker(periodForBench)
 						defer ticker.Stop()
 
@@ -68,7 +68,7 @@ func BenchmarkCacheGetting_withPartialGC(benchmark *testing.B) {
 								return
 							}
 						}
-					}()
+					}(storageSize, expiredPercent)
 
 					benchmark.ResetTimer()
 

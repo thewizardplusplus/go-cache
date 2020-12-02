@@ -64,7 +64,7 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 				ctx, cancel := context.WithCancel(context.Background())
 				defer cancel()
 
-				go func() {
+				go func(storageSize int) {
 					ticker := time.NewTicker(time.Nanosecond)
 					defer ticker.Stop()
 
@@ -76,7 +76,7 @@ func BenchmarkCacheGetting(benchmark *testing.B) {
 							return
 						}
 					}
-				}()
+				}(storageSize)
 
 				benchmark.ResetTimer()
 
