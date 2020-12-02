@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.5.1](https://github.com/thewizardplusplus/go-cache/tree/v1.5.1) (2020-12-02)
+
+- improve benchmarks:
+  - remove data races from additional concurrent loading;
+- implementation of an in-memory cache:
+  - add explanatory comments;
+- describe for releases:
+  - features;
+  - change log.
+
 ## [v1.5](https://github.com/thewizardplusplus/go-cache/tree/v1.5) (2020-11-07)
 
 - implementation of an in-memory cache:
