@@ -7,7 +7,7 @@ import (
 // Value ...
 type Value struct {
 	Data           interface{}
-	ExpirationTime time.Time
+	ExpirationTime time.Time // zero time means infinite time to live
 }
 
 // IsExpired ...
