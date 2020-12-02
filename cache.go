@@ -37,6 +37,9 @@ func NewCache(options ...Option) Cache {
 }
 
 // NewCacheWithGC ...
+//
+// It additionally runs garbage collection in background.
+//
 func NewCacheWithGC(options ...OptionWithGC) Cache {
 	config := newConfigWithGC(options)
 
@@ -47,6 +50,9 @@ func NewCacheWithGC(options ...OptionWithGC) Cache {
 }
 
 // Get ...
+//
+// The error can be ErrKeyMissed or ErrKeyExpired only.
+//
 func (cache Cache) Get(key hashmap.Key) (data interface{}, err error) {
 	data, ok := cache.storage.Get(key)
 	if !ok {
@@ -62,6 +68,9 @@ func (cache Cache) Get(key hashmap.Key) (data interface{}, err error) {
 }
 
 // GetWithGC ...
+//
+// It additionally deletes the value if its time to live expired.
+//
 func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
 	data, err = cache.Get(key)
 	if err != nil {
@@ -76,11 +85,19 @@ func (cache Cache) GetWithGC(key hashmap.Key) (data interface{}, err error) {
 }
 
 // Iterate ...
+//
+// If the handler returns false, iteration is broken.
+//
 func (cache Cache) Iterate(ctx context.Context, handler hashmap.Handler) bool {
 	return cache.iterateWithExpiredHandler(ctx, handler, func(key hashmap.Key) {})
 }
 
 // IterateWithGC ...
+//
+// It additionally deletes iterated values if their time to live expired.
+//
+// If the handler returns false, iteration is broken.
+//
 func (cache Cache) IterateWithGC(
 	ctx context.Context,
 	handler hashmap.Handler,
@@ -89,6 +106,9 @@ func (cache Cache) IterateWithGC(
 }
 
 // Set ...
+//
+// Zero time to live means infinite one.
+//
 func (cache Cache) Set(key hashmap.Key, data interface{}, ttl time.Duration) {
 	var expirationTime time.Time
 	if ttl != 0 {

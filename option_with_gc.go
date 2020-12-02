@@ -36,6 +36,8 @@ func WithGCAndContext(ctx context.Context) OptionWithGC {
 
 // WithGCAndStorage ...
 //
+// It should be safe for concurrent access.
+//
 // Default: an instance of the hashmap.ConcurrentHashMap structure
 // with default options.
 //
