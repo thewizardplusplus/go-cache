@@ -244,4 +244,4 @@ BenchmarkCacheGetting_withPartialGC/GetWithGC/1000000/0.99-8         	  200000	 
 
 The MIT License (MIT)
 
-Copyright &copy; 2019-2020 thewizardplusplus
+Copyright &copy; 2019-2021 thewizardplusplus
