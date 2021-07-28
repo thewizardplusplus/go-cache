@@ -1,22 +1,10 @@
 package cache
 
 import (
-	"context"
-
 	"github.com/thewizardplusplus/go-cache/gc"
 	"github.com/thewizardplusplus/go-cache/models"
 	hashmap "github.com/thewizardplusplus/go-hashmap"
 )
-
-//go:generate mockery -name=Context -inpkg -case=underscore -testonly
-
-// Context ...
-//
-// It's used only for mock generating.
-//
-type Context interface {
-	context.Context
-}
 
 //go:generate mockery -name=Key -inpkg -case=underscore -testonly
 
