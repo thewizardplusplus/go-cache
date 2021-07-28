@@ -105,7 +105,7 @@ func TestNewCacheWithGC(test *testing.T) {
 
 	const gcPeriod = 100 * time.Millisecond
 	cache := NewCacheWithGC(
-		WithGCAndContext(ctx),
+		ctx,
 		WithGCAndStorage(storage),
 		WithGCAndClock(clock),
 		WithGCAndGCFactory(gcFactoryHandler.NewGC),

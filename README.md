@@ -151,7 +151,8 @@ const (
 )
 
 func main() {
-	timeZones := cache.NewCacheWithGC(cache.WithGCAndGCPeriod(gcPeriod))
+	timeZones :=
+		cache.NewCacheWithGC(context.Background(), cache.WithGCAndGCPeriod(gcPeriod))
 	timeZones.Set(StringKey("EST"), -5*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("CST"), -6*60*60, exampleDelay/2)
 	timeZones.Set(StringKey("MST"), -7*60*60, exampleDelay/2)

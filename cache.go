@@ -40,11 +40,11 @@ func NewCache(options ...Option) Cache {
 //
 // It additionally runs garbage collection in background.
 //
-func NewCacheWithGC(options ...OptionWithGC) Cache {
+func NewCacheWithGC(ctx context.Context, options ...OptionWithGC) Cache {
 	config := newConfigWithGC(options)
 
 	gcInstance := config.gcFactory(config.storage, config.clock)
-	go gc.Run(config.ctx, gcInstance, config.gcPeriod)
+	go gc.Run(ctx, gcInstance, config.gcPeriod)
 
 	return NewCache(WithStorage(config.storage), WithClock(config.clock))
 }
