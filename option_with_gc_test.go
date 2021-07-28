@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -21,7 +20,6 @@ func Test_newConfigWithGC(test *testing.T) {
 	for _, data := range []struct {
 		name          string
 		args          args
-		wantCtx       context.Context
 		wantStorage   hashmap.Storage
 		wantClockTime time.Time
 		wantGCType    gc.GC
@@ -32,18 +30,6 @@ func Test_newConfigWithGC(test *testing.T) {
 			args: args{
 				options: nil,
 			},
-			wantCtx:       context.Background(),
-			wantStorage:   hashmap.NewConcurrentHashMap(),
-			wantClockTime: time.Now(),
-			wantGCType:    gc.PartialGC{},
-			wantGCPeriod:  100 * time.Millisecond,
-		},
-		{
-			name: "with the set context",
-			args: args{
-				options: []OptionWithGC{WithGCAndContext(new(MockContext))},
-			},
-			wantCtx:       new(MockContext),
 			wantStorage:   hashmap.NewConcurrentHashMap(),
 			wantClockTime: time.Now(),
 			wantGCType:    gc.PartialGC{},
@@ -54,7 +40,6 @@ func Test_newConfigWithGC(test *testing.T) {
 			args: args{
 				options: []OptionWithGC{WithGCAndStorage(new(MockStorage))},
 			},
-			wantCtx:       context.Background(),
 			wantStorage:   new(MockStorage),
 			wantClockTime: time.Now(),
 			wantGCType:    gc.PartialGC{},
@@ -65,7 +50,6 @@ func Test_newConfigWithGC(test *testing.T) {
 			args: args{
 				options: []OptionWithGC{WithGCAndClock(clock)},
 			},
-			wantCtx:       context.Background(),
 			wantStorage:   hashmap.NewConcurrentHashMap(),
 			wantClockTime: clock(),
 			wantGCType:    gc.PartialGC{},
@@ -82,7 +66,6 @@ func Test_newConfigWithGC(test *testing.T) {
 					),
 				},
 			},
-			wantCtx:       context.Background(),
 			wantStorage:   hashmap.NewConcurrentHashMap(),
 			wantClockTime: time.Now(),
 			wantGCType:    new(MockGC),
@@ -93,7 +76,6 @@ func Test_newConfigWithGC(test *testing.T) {
 			args: args{
 				options: []OptionWithGC{WithGCAndGCPeriod(23 * time.Second)},
 			},
-			wantCtx:       context.Background(),
 			wantStorage:   hashmap.NewConcurrentHashMap(),
 			wantClockTime: time.Now(),
 			wantGCType:    gc.PartialGC{},
@@ -103,7 +85,6 @@ func Test_newConfigWithGC(test *testing.T) {
 			name: "with the set config",
 			args: args{
 				options: []OptionWithGC{
-					WithGCAndContext(new(MockContext)),
 					WithGCAndStorage(new(MockStorage)),
 					WithGCAndClock(clock),
 					WithGCAndGCFactory(
@@ -114,7 +95,6 @@ func Test_newConfigWithGC(test *testing.T) {
 					WithGCAndGCPeriod(23 * time.Second),
 				},
 			},
-			wantCtx:       new(MockContext),
 			wantStorage:   new(MockStorage),
 			wantClockTime: clock(),
 			wantGCType:    new(MockGC),
@@ -124,15 +104,12 @@ func Test_newConfigWithGC(test *testing.T) {
 		test.Run(data.name, func(test *testing.T) {
 			got := newConfigWithGC(data.args.options)
 
-			for _, value := range []interface{}{got.ctx, got.storage} {
-				_, ok := value.(interface {
-					AssertExpectations(assert.TestingT) bool // nolint: staticcheck
-				})
-				if ok {
-					mock.AssertExpectationsForObjects(test, value)
-				}
+			_, ok := got.storage.(interface {
+				AssertExpectations(assert.TestingT) bool // nolint: staticcheck
+			})
+			if ok {
+				mock.AssertExpectationsForObjects(test, got.storage)
 			}
-			assert.Equal(test, data.wantCtx, got.ctx)
 			assert.Equal(test, data.wantStorage, got.storage)
 			assert.Equal(test, data.wantGCPeriod, got.gcPeriod)
 

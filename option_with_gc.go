@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"time"
 
 	"github.com/thewizardplusplus/go-cache/gc"
@@ -14,7 +13,6 @@ type GCFactory func(storage hashmap.Storage, clock models.Clock) gc.GC
 
 // ConfigWithGC ...
 type ConfigWithGC struct {
-	ctx       context.Context
 	storage   hashmap.Storage
 	clock     models.Clock
 	gcFactory GCFactory
@@ -23,16 +21,6 @@ type ConfigWithGC struct {
 
 // OptionWithGC ...
 type OptionWithGC func(config *ConfigWithGC)
-
-// WithGCAndContext ...
-//
-// Default: a result of the context.Background() function.
-//
-func WithGCAndContext(ctx context.Context) OptionWithGC {
-	return func(config *ConfigWithGC) {
-		config.ctx = ctx
-	}
-}
 
 // WithGCAndStorage ...
 //
@@ -81,7 +69,6 @@ func WithGCAndGCPeriod(gcPeriod time.Duration) OptionWithGC {
 func newConfigWithGC(options []OptionWithGC) ConfigWithGC {
 	// default config
 	config := ConfigWithGC{
-		ctx:     context.Background(),
 		storage: hashmap.NewConcurrentHashMap(),
 		clock:   time.Now,
 		gcFactory: func(storage hashmap.Storage, clock models.Clock) gc.GC {
