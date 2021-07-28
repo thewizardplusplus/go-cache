@@ -1,5 +1,9 @@
 # Change Log
 
+## [v1.5.2](https://github.com/thewizardplusplus/go-cache/tree/v1.5.2) (2021-07-28)
+
+- pass a context to the `cache.NewCacheWithGC()` method directly.
+
 ## [v1.5.1](https://github.com/thewizardplusplus/go-cache/tree/v1.5.1) (2020-12-02)
 
 - improve benchmarks:
